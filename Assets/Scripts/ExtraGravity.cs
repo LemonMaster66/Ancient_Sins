@@ -12,7 +12,6 @@ public class ExtraGravity : MonoBehaviour
     }
     void FixedUpdate()
     {
-        //Gravity
         rb.AddForce(Physics.gravity * Gravity /10);
     }
 }
