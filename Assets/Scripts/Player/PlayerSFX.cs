@@ -9,16 +9,17 @@ public class PlayerSFX : MonoBehaviour
     public GameObject AudioPrefab;
     [Space(8)]
     public float TimeBetweenSteps;
+    public float stepTimer;
 
 
     [Header("Physics Sounds")]
-    public AudioClip[] Step;
-    public AudioClip Jump;
+    public AudioClip[] WalkStep;
+    public AudioClip[] RunStep;
+    public AudioClip[] RunStart;
+    [Space(5)]
+    public AudioClip[] Jump;
     public AudioClip[] Land;
 
-
-    [Header("Info")]
-    public float stepTimer;
 
     private PlayerMovement PM;
     private GroundCheck groundCheck;
@@ -36,16 +37,20 @@ public class PlayerSFX : MonoBehaviour
         if(PM.WalkingCheck()) stepTimer -= Time.deltaTime;
         if(stepTimer < 0)
         {
-            PlayRandomSound(Step, 1, 1, 0.2f, false);
+            if(!PM.Running) PlayRandomSound(WalkStep, 0.75f, 1, 0.2f);
+            else            PlayRandomSound(RunStep,  0.75f, 1, 0.2f);
             stepTimer = TimeBetweenSteps;
         }
+
+        if(!PM.Running) TimeBetweenSteps = 0.4f;
+        else            TimeBetweenSteps = 0.3f;
 
         stepTimer = (float)Math.Round(stepTimer, 2);
     }
 
 
 
-    public void PlaySound(AudioClip audioClip, float Pitch = 1, float Volume = 1, float PitchVariation = 0, bool Loop = false)
+    public void PlaySound(AudioClip audioClip, float Volume = 1, float Pitch = 1, float PitchVariation = 0, bool Loop = false)
     {
         GameObject AudioObj = Instantiate(AudioPrefab, PM.transform.position, Quaternion.identity, transform);
         AudioObj.name = audioClip.name;
@@ -61,7 +66,7 @@ public class PlayerSFX : MonoBehaviour
     }
 
 
-    public void PlayRandomSound(AudioClip[] audioClip, float Pitch, float Volume, float PitchVariation, bool Loop)
+    public void PlayRandomSound(AudioClip[] audioClip, float Volume = 1, float Pitch = 1, float PitchVariation = 0, bool Loop = false)
     {
         GameObject AudioObj = Instantiate(AudioPrefab, PM.transform.position, Quaternion.identity, transform);
 

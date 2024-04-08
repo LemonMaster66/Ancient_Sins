@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VInspector;
@@ -17,11 +18,14 @@ public class PlayerMovement : MonoBehaviour
     private int   MaxHealth = 100;
 
     [Header("States")]
-    public bool Grounded       = true;
-    public bool Crouching      = true;
-    public bool CanMove        = true;
-    public bool Dead           = false;
-    public bool Paused         = false;
+    public bool  Grounded       = true;
+    public bool  Crouching      = true;
+    public bool  Running        = false;
+
+    public bool  CanMove        = true;
+    public bool  Dead           = false;
+    public bool  Paused         = false;
+
     public bool HasJumped      = false;
     public bool HoldingCrouch  = false;
 
@@ -29,8 +33,9 @@ public class PlayerMovement : MonoBehaviour
     #region Debug Stats
         [Foldout("Debug Stats")]
         public Vector3     PlayerVelocity;
-        public Vector3     VelocityXZ;
-        public float       ForwardVelocityMagnitude;
+        public float       VelocityMagnitude;
+        [HideInInspector]  public float   ForwardVelocityMagnitude;
+        [HideInInspector]  public Vector3 VelocityXZ;
         [HideInInspector]  public Vector3 CamF;
         [HideInInspector]  public Vector3 CamR;
         [HideInInspector]  public Vector3 Movement;
@@ -75,29 +80,38 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        #region PerFrame Calculations
-            //Camera Orientation
-            CamF = Camera.forward;
-            CamR = Camera.right;
-            CamF.y = 0;
-            CamR.y = 0;
-            CamF = CamF.normalized;
-            CamR = CamR.normalized;
+        #region Physics
+            
+        #endregion
+        //**********************************
+        #region PerFrame stuff
+            #region Camera Orientation Values
+                CamF = Camera.forward;
+                CamR = Camera.right;
+                CamF.y = 0;
+                CamR.y = 0;
+                CamF = CamF.normalized;
+                CamR = CamR.normalized;
 
-            //Rigidbody Velocity Magnitude on the X/Z Axis
-            VelocityXZ = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+                //Rigidbody Velocity Magnitude on the X/Z Axis
+                VelocityXZ = new Vector3(rb.velocity.x, 0, rb.velocity.z);
 
-            // Calculate the Forward velocity magnitude
-            Vector3 ForwardVelocity = Vector3.Project(rb.velocity, CamF);
-            ForwardVelocityMagnitude = ForwardVelocity.magnitude;
-            ForwardVelocityMagnitude = (float)Math.Round(ForwardVelocityMagnitude, 2);
+                // Calculate the Forward velocity magnitude
+                Vector3 ForwardVelocity = Vector3.Project(rb.velocity, CamF);
+                ForwardVelocityMagnitude = ForwardVelocity.magnitude;
+                ForwardVelocityMagnitude = (float)Math.Round(ForwardVelocityMagnitude, 2);
+            #endregion
+
+            //Gravity
+            rb.AddForce(Physics.gravity * Gravity /10);
 
             LockToMaxSpeed();
+
+            if(Running) Speed = 200;
+            else        Speed = 125;
         #endregion
         //**********************************
 
-        //Gravity
-        rb.AddForce(Physics.gravity * Gravity /10);
 
         // Movement Code
         if(!Paused && !Dead && CanMove)
@@ -109,12 +123,12 @@ public class PlayerMovement : MonoBehaviour
         //CounterMovement
         rb.AddForce(VelocityXZ * -(CounterMovement / 10));
 
-
         #region Rounding Values
             PlayerVelocity      = rb.velocity;
             PlayerVelocity.x    = (float)Math.Round(PlayerVelocity.x, 2);
             PlayerVelocity.y    = (float)Math.Round(PlayerVelocity.y, 2);
             PlayerVelocity.z    = (float)Math.Round(PlayerVelocity.z, 2);
+            VelocityMagnitude   = (float)Math.Round(rb.velocity.magnitude, 2);
         #endregion
     }
 
@@ -143,13 +157,31 @@ public class PlayerMovement : MonoBehaviour
     public void Jump()
     {
         HasJumped = true;
+        rb.velocity = new Vector3(rb.velocity.x, math.clamp(rb.velocity.y, 0, math.INFINITY), rb.velocity.z);
         rb.AddForce(Vector3.up * JumpForce, ForceMode.VelocityChange);
+
+        playerSFX.PlayRandomSound(playerSFX.Jump, 1, 1, 0.15f);
     } 
 
 
     //***********************************************************************
     //***********************************************************************
     //Abilities
+    public void OnRun(InputAction.CallbackContext context)
+    {
+        if(Paused) return;
+
+        if(context.started)  
+        {
+            Running = true;
+            Speed = 200;
+        }
+        if(context.canceled)
+        {
+            Running = false;
+            Speed = _speed;
+        }
+    }
 
     public void OnCrouch(InputAction.CallbackContext context)
     {

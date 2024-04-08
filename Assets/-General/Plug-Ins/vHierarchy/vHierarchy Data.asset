@@ -25,18 +25,30 @@ MonoBehaviour:
         - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1515904753-0
         - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-7951114688597718866-7263646423472346151
         - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-637377987-0
+        - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-7951114688597718866-1131487980
+        - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-7951114688597718866-1771671225
+        - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-696133574-0
+        - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-464004125-0
         values:
-        - colorIndex: 3
+        - colorIndex: 9
           iconNameOrGuid: Camera Icon
         - colorIndex: 0
           iconNameOrGuid: DirectionalLight Icon
         - colorIndex: 2
           iconNameOrGuid: Camera Icon
         - colorIndex: 5
+          iconNameOrGuid: AvatarMask On Icon
+        - colorIndex: 1
           iconNameOrGuid: 
         - colorIndex: 1
           iconNameOrGuid: 
-        - colorIndex: 6
-          iconNameOrGuid: 
         - colorIndex: 0
           iconNameOrGuid: SphereCollider Icon
+        - colorIndex: 1
+          iconNameOrGuid: 
+        - colorIndex: 1
+          iconNameOrGuid: 
+        - colorIndex: 0
+          iconNameOrGuid: PreMatCube
+        - colorIndex: 3
+          iconNameOrGuid: 
