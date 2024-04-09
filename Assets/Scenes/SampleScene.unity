@@ -499,7 +499,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -972,7 +972,7 @@ GameObject:
   - component: {fileID: 637377989}
   - component: {fileID: 637377992}
   - component: {fileID: 637377993}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GroundCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2220,7 +2220,7 @@ GameObject:
   - component: {fileID: 1201408076}
   - component: {fileID: 1201408074}
   - component: {fileID: 1201408075}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2364,13 +2364,14 @@ MonoBehaviour:
   Gravity: 40
   Health: 0
   Grounded: 1
-  Crouching: 1
+  Crouching: 0
   Running: 0
   CanMove: 1
   Dead: 0
   Paused: 0
   HasJumped: 0
   HoldingCrouch: 0
+  TargetScale: {x: 1, y: 1.5, z: 1}
   PlayerVelocity: {x: 0, y: 0, z: 0}
   VelocityMagnitude: 0
   ForwardVelocityMagnitude: 0
@@ -2663,7 +2664,7 @@ GameObject:
   - component: {fileID: 1515904754}
   - component: {fileID: 1515904757}
   - component: {fileID: 1515904756}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cool Glasses
   m_TagString: Untagged
   m_Icon: {fileID: 0}

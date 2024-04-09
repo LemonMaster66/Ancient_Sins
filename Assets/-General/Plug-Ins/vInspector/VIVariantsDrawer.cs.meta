@@ -13,6 +13,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 245000
   packageName: vInspector
-  packageVersion: 1.2.27
-  assetPath: Assets/vInspector/VIVariantsDrawer.cs
-  uploadId: 653736
+  packageVersion: 1.2.29
+  assetPath: Assets/-General/Plug-Ins/vInspector/VIVariantsDrawer.cs
+  uploadId: 655532

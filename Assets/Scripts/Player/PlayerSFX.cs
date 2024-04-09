@@ -37,13 +37,14 @@ public class PlayerSFX : MonoBehaviour
         if(PM.WalkingCheck()) stepTimer -= Time.deltaTime;
         if(stepTimer < 0)
         {
-            if(!PM.Running) PlayRandomSound(WalkStep, 0.75f, 1, 0.2f);
+            if(!PM.Running) PlayRandomSound(WalkStep, (PM.Crouching ? 0.3f:0.75f), 1, 0.2f);
             else            PlayRandomSound(RunStep,  0.75f, 1, 0.2f);
             stepTimer = TimeBetweenSteps;
         }
 
-        if(!PM.Running) TimeBetweenSteps = 0.4f;
-        else            TimeBetweenSteps = 0.3f;
+        if(PM.Running)        TimeBetweenSteps = 0.3f;
+        else if(PM.Crouching) TimeBetweenSteps = 0.65f;
+        else                  TimeBetweenSteps = 0.4f;
 
         stepTimer = (float)Math.Round(stepTimer, 2);
     }

@@ -1,5 +1,6 @@
 using System;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VInspector;
@@ -19,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("States")]
     public bool  Grounded       = true;
-    public bool  Crouching      = true;
+    public bool  Crouching      = false;
     public bool  Running        = false;
 
     public bool  CanMove        = true;
@@ -28,6 +29,11 @@ public class PlayerMovement : MonoBehaviour
 
     public bool HasJumped      = false;
     public bool HoldingCrouch  = false;
+    public bool HoldingRun     = false;
+
+
+    [Header("Transform Stuff")]
+    public Vector3 TargetScale;
 
 
     #region Debug Stats
@@ -80,10 +86,6 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        #region Physics
-            
-        #endregion
-        //**********************************
         #region PerFrame stuff
             #region Camera Orientation Values
                 CamF = Camera.forward;
@@ -106,12 +108,10 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(Physics.gravity * Gravity /10);
 
             LockToMaxSpeed();
-
-            if(Running) Speed = 200;
-            else        Speed = 125;
         #endregion
         //**********************************
 
+        transform.localScale = Vector3.Slerp(transform.localScale, TargetScale, 0.175f);
 
         // Movement Code
         if(!Paused && !Dead && CanMove)
@@ -160,23 +160,34 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = new Vector3(rb.velocity.x, math.clamp(rb.velocity.y, 0, math.INFINITY), rb.velocity.z);
         rb.AddForce(Vector3.up * JumpForce, ForceMode.VelocityChange);
 
+        CrouchState(false);
+
         playerSFX.PlayRandomSound(playerSFX.Jump, 1, 1, 0.15f);
     } 
 
-
-    //***********************************************************************
-    //***********************************************************************
-    //Abilities
     public void OnRun(InputAction.CallbackContext context)
     {
         if(Paused) return;
 
-        if(context.started)  
+        if(context.started && !Crouching)
+        {
+            HoldingRun = true;
+            RunState(true);
+        }
+        if(context.canceled) 
+        {
+            HoldingRun = false;
+            RunState(false);
+        }
+    }
+    public void RunState(bool state)
+    {
+        if(state)
         {
             Running = true;
             Speed = 200;
         }
-        if(context.canceled)
+        else
         {
             Running = false;
             Speed = _speed;
@@ -187,29 +198,41 @@ public class PlayerMovement : MonoBehaviour
     {
         if(Paused) return;
 
-        if(context.started) HoldingCrouch = true;
-        if(context.canceled) HoldingCrouch = false;
+        if(context.started && !Crouching) 
+        {
+            HoldingCrouch = true;
+            CrouchState(true);
+        }
+        if(context.canceled && Crouching)
+        {
+            HoldingCrouch = false;
+            CrouchState(false);
+        }
     }
     public void CrouchState(bool state)
     {
-        if(state && HoldingCrouch)
+        if(state)
         {
-            Crouching = true;
-            MaxSpeed = _maxSpeed -10;
+            RunState(false);
 
-            transform.localScale += new Vector3(0, -1, 0);
-            rb.position += new Vector3(0,-1,0);
+            Crouching = true;
+            TargetScale.y = 0.5f;
+            Speed = 50;
         }
         else
         {
             Crouching = false;
-            MaxSpeed = _maxSpeed;
+            TargetScale.y = 1.5f;
+            Speed = _speed;
 
-            transform.localScale += new Vector3(0,1,0);
-            rb.position += new Vector3(0,1,0);
+            if(HoldingRun) RunState(true);
         }
     }
 
+
+    //***********************************************************************
+    //***********************************************************************
+    //Extra Logic
     public void OnPause(InputAction.CallbackContext context)
     {
         if(context.started)
@@ -220,11 +243,6 @@ public class PlayerMovement : MonoBehaviour
             Debug.Log("InputLock = " + Paused);
         }
     }
-
-
-    //***********************************************************************
-    //***********************************************************************
-    //Extra Logic
 
     public void LockToMaxSpeed()
     {
