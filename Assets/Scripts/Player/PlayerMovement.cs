@@ -185,7 +185,7 @@ public class PlayerMovement : MonoBehaviour
         if(state)
         {
             Running = true;
-            Speed = 200;
+            Speed = 185;
         }
         else
         {

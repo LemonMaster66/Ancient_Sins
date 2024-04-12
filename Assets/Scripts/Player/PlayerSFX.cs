@@ -12,13 +12,15 @@ public class PlayerSFX : MonoBehaviour
     public float stepTimer;
 
 
-    [Header("Physics Sounds")]
+    [Header("Physics")]
     public AudioClip[] WalkStep;
     public AudioClip[] RunStep;
-    public AudioClip[] RunStart;
     [Space(5)]
     public AudioClip[] Jump;
     public AudioClip[] Land;
+
+    [Header("Camera")]
+    public AudioClip Capture;
 
 
     private PlayerMovement PM;
