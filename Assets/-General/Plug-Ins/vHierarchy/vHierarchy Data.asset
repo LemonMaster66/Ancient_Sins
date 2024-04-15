@@ -57,7 +57,7 @@ MonoBehaviour:
         - colorIndex: 0
           iconNameOrGuid: PreMatCube
         - colorIndex: 3
-          iconNameOrGuid: 
+          iconNameOrGuid: AudioClip Icon
         - colorIndex: 8
           iconNameOrGuid: Settings Icon
         - colorIndex: 1

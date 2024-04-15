@@ -281,6 +281,17 @@
                     "action": "PhotoPick",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "ccf8eae4-4373-4b78-9a69-a708fa540396",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "PhotoPick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

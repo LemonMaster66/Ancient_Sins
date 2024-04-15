@@ -1,6 +1,5 @@
 using System;
 using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VInspector;
@@ -185,7 +184,7 @@ public class PlayerMovement : MonoBehaviour
         if(state)
         {
             Running = true;
-            Speed = 185;
+            Speed = 200;
         }
         else
         {
