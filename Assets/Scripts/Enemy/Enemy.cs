@@ -37,12 +37,14 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(FrustumCheck() && !OcclusionCheck()) Freeze(true);
-        else                                    Freeze(false);
+        //if(FrustumCheck() && !OcclusionCheck()) Freeze(true);
+        //else                                    Freeze(false);
 
-        if(!OcclusionCheck()) Target.position = playerMovement.transform.position;
+        //if(!OcclusionCheck()) Target.position = playerMovement.transform.position;
 
         agent.SetDestination(Target.position);
+
+        if(Vector3.Distance(transform.position, Target.position) < 5) RandomNavmeshLocation();
     }
 
 
@@ -95,5 +97,17 @@ public class Enemy : MonoBehaviour
         }
         if(Occluded) return true;
         else         return false;
+    }
+
+    [Button]
+    public void RandomNavmeshLocation()
+    {
+        Vector3 randomDirection = Random.onUnitSphere * 30;
+        randomDirection += transform.position;
+        NavMeshHit hit;
+        Vector3 finalPosition = Vector3.zero;
+        if (NavMesh.SamplePosition(randomDirection, out hit, 30, 1)) finalPosition = hit.position;
+        //return finalPosition;
+        Target.position = finalPosition;
     }
 }
