@@ -63,7 +63,7 @@ public class CameraManager : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(spotLight.intensity > 0) spotLight.intensity -= 4;
+        if(spotLight.intensity > 0) spotLight.intensity -= 5;
         if(spotLight.intensity < 0) spotLight.intensity =  0;
 
         if(captureCooldownTime > 0 && Rendering) captureCooldownTime -= Time.deltaTime;
@@ -97,12 +97,12 @@ public class CameraManager : MonoBehaviour
     public void Capture()
     {
         Rendering = true;
-        spotLight.intensity = 125;
+        spotLight.intensity = 175;
         captureCooldownTime = CaptureCooldown;
 
         #region Post Processing
             postProcessing.profile.TryGet(out ColorAdjustments colorAdjustments);
-            colorAdjustments.postExposure.value = 2;
+            colorAdjustments.postExposure.value = 3;
             colorAdjustments.contrast.value = -10;
 
             cam.Render();
