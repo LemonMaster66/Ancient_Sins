@@ -102,7 +102,7 @@ public class CameraManager : MonoBehaviour
 
         #region Post Processing
             postProcessing.profile.TryGet(out ColorAdjustments colorAdjustments);
-            colorAdjustments.postExposure.value = 3;
+            colorAdjustments.postExposure.value = 1.5f;
             colorAdjustments.contrast.value = -10;
 
             cam.Render();
