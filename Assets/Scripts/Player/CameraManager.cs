@@ -137,12 +137,7 @@ public class CameraManager : MonoBehaviour
         if(texture2D == null) Screen.material.mainTexture = Photos[ActivePhoto];
         else                  Screen.material.mainTexture = texture2D;
 
-        if(TakenPhoto)
-        {
-            ActivePhoto++;
-            tmPro.text = "Photo: " + ActivePhoto + "/" + Photos.Count;
-            ActivePhoto--;
-        }
+        ApplyText();
     }
 
 
@@ -182,6 +177,8 @@ public class CameraManager : MonoBehaviour
 
             if(InGallery) Screen.material.mainTexture = Photos[Photos.Count-1];
             else          Screen.material.mainTexture = renderTexture;
+
+            ApplyText();
         }
     }
 
@@ -206,4 +203,12 @@ public class CameraManager : MonoBehaviour
     //***********************************************************************
     //***********************************************************************
     //Extra Logic
+
+    void ApplyText()
+    {
+        if(!TakenPhoto) return;
+        ActivePhoto++;
+        tmPro.text = "Photo: " + ActivePhoto + "/" + Photos.Count;
+        ActivePhoto--;
+    }
 }

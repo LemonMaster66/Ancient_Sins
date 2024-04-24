@@ -14,6 +14,14 @@ scopes = {
 	"last_search.8DF93126" = ""
 	"OpenInspectorPreview.8DF93126" = "0"
 	"currentGroup.8DF93126" = null
+	"picker_window_position_offset.0B486DF2" = "702;49;320;550"
+	"picker_search_text.0B486DF2" = ""
+	"last_search.0B486DF2" = ""
+	"OpenInspectorPreview.0B486DF2" = "0"
+	"currentGroup.0B486DF2" = null
+	"last_search.45C55C1A" = "navmes"
+	"OpenInspectorPreview.45C55C1A" = "0"
+	"currentGroup.45C55C1A" = "all"
 }
 providers = {
 	performance = {

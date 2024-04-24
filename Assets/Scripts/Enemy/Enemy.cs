@@ -7,23 +7,33 @@ using VInspector;
 public class Enemy : MonoBehaviour
 {
     public Transform   Target;
+    public Transform   LastTarget;
     public Transform[] Points;
     public LayerMask   OcclusionLayerMask;
 
 
+    [Header("Properties")]
+    public float SearchDuration;
+
+
     [Header("States")]
-    [Variants("Wandering", "Chasing", "Searching")]
+    [Variants("Wandering", "Chasing", "Searching", "Nigerundayo")]
     public string State;
+    
     public bool Watched;
+    public bool IgnorePlayer;
     
     [Space(10)]
 
-    //[Foldout("Debug")]
+    [Foldout("Debug")]
     private Camera         cam;
     private NavMeshAgent   agent;
     private PlayerMovement playerMovement;
     private Plane[]        frustumPlanes;
     private Collider       boundsCollider;
+    private float _searchDuration;
+
+    private AudioSource audioSource;
 
 
     void Awake()
@@ -32,19 +42,27 @@ public class Enemy : MonoBehaviour
         agent = GetComponentInParent<NavMeshAgent>();
         playerMovement = FindAnyObjectByType<PlayerMovement>();
         boundsCollider = transform.GetChild(0).GetComponent<Collider>();
+
+        audioSource = GetComponentInChildren<AudioSource>();
     }
 
 
     void FixedUpdate()
     {
-        //if(FrustumCheck() && !OcclusionCheck()) Freeze(true);
-        //else                                    Freeze(false);
-
-        //if(!OcclusionCheck()) Target.position = playerMovement.transform.position;
-
         agent.SetDestination(Target.position);
 
-        if(Vector3.Distance(transform.position, Target.position) < 5) RandomNavmeshLocation();
+        if(!IgnorePlayer)
+        {
+            if(FrustumCheck() && !OcclusionCheck()) Freeze(true);
+            else                                    Freeze(false);
+
+            if(!OcclusionCheck()) Target.position = playerMovement.transform.position;
+        }
+
+        //Next Movement
+        if(Vector3.Distance(transform.position, agent.destination) < 5) Target.position = RandomNavmeshLocation(20, 8, 0.4f);
+
+        audioSource.volume = agent.speed;
     }
 
 
@@ -57,13 +75,14 @@ public class Enemy : MonoBehaviour
         }
         else if(!state && Watched)
         {
+            State = "Chasing";
             Watched = false;
-            agent.speed = 28;
+            agent.speed = 25;
         }
     }
 
-    // if its in the Cameras Bounds
-    public bool FrustumCheck()
+    
+    public bool FrustumCheck()   // True if its in the Cameras Bounds
     {
         Bounds bounds = boundsCollider.bounds;
         frustumPlanes = GeometryUtility.CalculateFrustumPlanes(cam);
@@ -71,9 +90,7 @@ public class Enemy : MonoBehaviour
         if(GeometryUtility.TestPlanesAABB(frustumPlanes, bounds)) return true;
         else return false;
     }
-
-    // if its occluded
-    public bool OcclusionCheck()
+    public bool OcclusionCheck() // True if its Occluded
     {
         bool Occluded = true;
 
@@ -99,15 +116,56 @@ public class Enemy : MonoBehaviour
         else         return false;
     }
 
-    [Button]
-    public void RandomNavmeshLocation()
+
+    public Vector3 RandomNavmeshLocation(float Range = 20, float MinDistance = 0, float MaxDirectionDotDifference = -1)
     {
-        Vector3 randomDirection = Random.onUnitSphere * 30;
-        randomDirection += transform.position;
-        NavMeshHit hit;
-        Vector3 finalPosition = Vector3.zero;
-        if (NavMesh.SamplePosition(randomDirection, out hit, 30, 1)) finalPosition = hit.position;
-        //return finalPosition;
-        Target.position = finalPosition;
+        int Iterations = 0;
+        LastTarget.position = Target.position;
+
+        while(Iterations < 20)
+        {
+            Iterations++;
+            Vector2 randomDirection = Random.insideUnitCircle.normalized * Range;
+            Vector3 dir = new Vector3(randomDirection.x, 0, randomDirection.y);
+
+            dir += transform.position;
+            if (NavMesh.SamplePosition(dir, out NavMeshHit hit, Range, 1))
+            {
+                Vector3 LastDir = Vector3.Normalize(Target.position - transform.position);
+                Vector3 NextDir = Vector3.Normalize(hit.position    - transform.position);
+
+                if(Vector3.Distance(Target.position, hit.position) < MinDistance)
+                {
+                    DebugPlus.DrawSphere(hit.position, 1).Color(Color.red).Duration(0.3f);
+                    continue;
+                }
+                
+                if(Vector3.Dot(LastDir, NextDir) < MaxDirectionDotDifference && Iterations < 20)
+                {
+                    DrawThickRay(transform.position, NextDir*6, Color.red, 0.5f, 0.015f);
+                    continue;
+                }
+                
+                DebugPlus.DrawSphere(hit.position, 1).Color(Color.green).Duration(0.4f);
+                
+                DrawThickRay(transform.position, LastDir*10, Color.white, 0.5f, 0.015f);
+                DrawThickRay(transform.position, NextDir*15, Color.green, 0.5f, 0.015f);
+
+                return hit.position;
+            }
+            return transform.position;
+        }
+        return transform.position;
+    }
+
+    void DrawThickRay(Vector3 start, Vector3 dir, Color color, float duration, float Thickness)
+    {
+        for(int i = 0; i < 200; i++)
+        {
+            start.x += Random.Range(Thickness, -Thickness);
+            start.y += Random.Range(Thickness, -Thickness);
+            start.z += Random.Range(Thickness, -Thickness);
+            Debug.DrawRay(start, dir, color, duration);
+        }
     }
 }
