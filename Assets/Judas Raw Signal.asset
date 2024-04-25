@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5969901aa40942499363f92e3787110, type: 3}
+  m_Name: Judas Raw Signal
+  m_EditorClassIdentifier: 
+  m_XCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_YCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.0027770996
+      value: 0.00793457
+      inSlope: -9.7641735
+      outSlope: -9.7641735
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.08523613
+    - serializedVersion: 3
+      time: 0.084496126
+      value: -0.2418492
+      inSlope: -0.17044774
+      outSlope: -0.17044774
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.59835213
+      value: -0.066060975
+      inSlope: 0.57028264
+      outSlope: 0.57028264
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.4983163
+    - serializedVersion: 3
+      time: 1
+      value: -0.000045776367
+      inSlope: -0.0019017219
+      outSlope: -0.0019017219
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.7456514
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  m_ZCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
