@@ -1,5 +1,6 @@
-using System.Collections;
+    using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Analytics;
 using UnityEngine;
 using UnityEngine.AI;
 using VInspector;
@@ -122,7 +123,7 @@ public class Enemy : MonoBehaviour
         int Iterations = 0;
         LastTarget.position = Target.position;
 
-        while(Iterations < 20)
+        while(Iterations < 10)
         {
             Iterations++;
             Vector2 randomDirection = Random.insideUnitCircle.normalized * Range;
@@ -134,28 +135,45 @@ public class Enemy : MonoBehaviour
                 Vector3 LastDir = Vector3.Normalize(Target.position - transform.position);
                 Vector3 NextDir = Vector3.Normalize(hit.position    - transform.position);
 
-                if(Vector3.Distance(Target.position, hit.position) < MinDistance)
+                if(CalculatePathDistance(Target.position, hit.position) < MinDistance || CalculatePathDistance(Target.position, hit.position) > Range+3)
                 {
-                    DebugPlus.DrawSphere(hit.position, 1).Color(Color.red).Duration(0.3f);
+                    //DebugPlus.DrawSphere(hit.position, 1).Color(Color.red).Duration(0.3f);
                     continue;
                 }
                 
-                if(Vector3.Dot(LastDir, NextDir) < MaxDirectionDotDifference && Iterations < 20)
+                if(Vector3.Dot(LastDir, NextDir) < MaxDirectionDotDifference && Iterations < 10)
                 {
-                    DrawThickRay(transform.position, NextDir*6, Color.red, 0.5f, 0.015f);
+                    //DrawThickRay(transform.position, NextDir*6, Color.red, 0.5f, 0.015f);
                     continue;
                 }
                 
-                DebugPlus.DrawSphere(hit.position, 1).Color(Color.green).Duration(0.4f);
+                //DebugPlus.DrawSphere(hit.position, 1).Color(Color.green).Duration(0.4f);
+                //DebugPlus.DrawWireSphere(Target.position, Range).Color(Color.white).Duration(0.4f);
                 
-                DrawThickRay(transform.position, LastDir*10, Color.white, 0.5f, 0.015f);
-                DrawThickRay(transform.position, NextDir*15, Color.green, 0.5f, 0.015f);
+                //DrawThickRay(transform.position, LastDir*10, Color.white, 0.5f, 0.015f);
+                //DrawThickRay(transform.position, NextDir*15, Color.green, 0.5f, 0.015f);
 
                 return hit.position;
             }
-            return transform.position;
+            return RandomNavmeshLocation(Range, MinDistance, MaxDirectionDotDifference);
         }
-        return transform.position;
+        // Failed all Checks
+        return RandomNavmeshLocation(Range+6, MinDistance-5, MaxDirectionDotDifference + 0.25f);
+    }
+
+    float CalculatePathDistance(Vector3 startPos, Vector3 TargetPos)
+    {
+        NavMeshPath path = new NavMeshPath();
+        float distance = 0;
+
+        if(NavMesh.CalculatePath(startPos, TargetPos, agent.areaMask, path))
+        {
+            for(int i = 1; i < path.corners.Length; i++)
+            {
+                distance += Vector3.Distance(path.corners[i-1], path.corners[i]);
+            }
+        }
+        return distance;
     }
 
     void DrawThickRay(Vector3 start, Vector3 dir, Color color, float duration, float Thickness)
