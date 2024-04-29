@@ -89,7 +89,7 @@ public class Enemy : MonoBehaviour
         if(CalculatePathDistance(transform.position, agent.destination) < 4)
         {
             MoveUpdate();
-            if(IgnorePlayer || Watched) return;
+            if(IgnorePlayer || Watched || State != "Chasing") return;
             if(AttackCooldown == 0 && CalculatePathDistance(transform.position, playerMovement.transform.position) < 5) Attack(90);
         }
     }
