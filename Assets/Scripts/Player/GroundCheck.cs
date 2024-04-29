@@ -11,8 +11,6 @@ public class GroundCheck : MonoBehaviour
     public GameObject GroundObject;
     public bool Grounded;
 
-    public Vector3 SmoothVelocity;
-
     void Awake()
     {
         //Assign Components
@@ -20,13 +18,6 @@ public class GroundCheck : MonoBehaviour
         playerSFX      = FindAnyObjectByType<PlayerSFX>();
         cameraFX       = FindAnyObjectByType<CameraFX>();
         timers         = GetComponentInParent<Timers>();
-    }
-    void Update()
-    {
-        SmoothVelocity = Vector3.Slerp(SmoothVelocity, playerMovement.rb.velocity, 0.15f);
-        SmoothVelocity.x    = (float)Math.Round(SmoothVelocity.x, 4);
-        SmoothVelocity.y    = (float)Math.Round(SmoothVelocity.y, 4);
-        SmoothVelocity.z    = (float)Math.Round(SmoothVelocity.z, 4);
     }
 
     public bool CheckGround()
@@ -46,8 +37,9 @@ public class GroundCheck : MonoBehaviour
             if(timers.JumpBuffer > 0) playerMovement.Jump();
             else playerMovement.HasJumped = false;
 
-            cameraFX.CMis.GenerateImpulseWithForce(Math.Clamp(SmoothVelocity.y, -25, 0) * (cameraFX.CMis.enabled ? 1 : 0));
-            playerSFX.PlayRandomSound(playerSFX.Land, SmoothVelocity.y*-1/50, 1f, 0.15f, false);
+            cameraFX.CMis.GenerateImpulseWithForce(Math.Clamp(playerMovement.SmoothVelocity.y, -25, 0) * (cameraFX.CMis.enabled ? 1 : 0));
+            playerSFX.PlayRandomSound(playerSFX.Land, playerMovement.SmoothVelocity.y*-1/50, 1f, 0.15f, false);
+            playerSFX.enemy.HearSound(transform.position, (50*Math.Clamp(playerMovement.SmoothVelocity.y*-1, 0,1)), 10);
         }
         
         GroundObject = other.gameObject;

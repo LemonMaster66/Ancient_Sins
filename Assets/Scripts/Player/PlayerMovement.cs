@@ -1,7 +1,9 @@
 using System;
+using Cinemachine;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using VInspector;
 
 public class PlayerMovement : MonoBehaviour
@@ -14,8 +16,7 @@ public class PlayerMovement : MonoBehaviour
     public float Gravity          = 100;
 
     [Header("Properties")]
-    public int    Health;
-    private int   MaxHealth = 100;
+    public float Health = 100;
 
     [Header("States")]
     public bool  Grounded       = true;
@@ -38,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
     #region Debug Stats
         [Foldout("Debug Stats")]
         public Vector3     PlayerVelocity;
+        public Vector3     SmoothVelocity;
         public float       VelocityMagnitude;
         [HideInInspector]  public float   ForwardVelocityMagnitude;
         [HideInInspector]  public Vector3 VelocityXZ;
@@ -49,6 +51,9 @@ public class PlayerMovement : MonoBehaviour
         [HideInInspector]  public float   _speed;
         [HideInInspector]  public float   _maxSpeed;
         [HideInInspector]  public float   _gravity;
+
+        private Image _damageScreen;
+        private Image _deathScreen;
     #endregion
     
     
@@ -68,6 +73,10 @@ public class PlayerMovement : MonoBehaviour
         Camera  = GameObject.Find("Main Camera").transform;
         rb      = GetComponent<Rigidbody>();
 
+        GameObject canvas = GameObject.Find("Canvas");
+        _damageScreen = canvas.transform.GetChild(0).GetComponent<Image>();
+        _deathScreen  = canvas.transform.GetChild(1).GetComponent<Image>();
+
         //Assign Scripts
         groundCheck  = GetComponentInChildren<GroundCheck>();
         timers       = GetComponent<Timers>();
@@ -77,10 +86,22 @@ public class PlayerMovement : MonoBehaviour
         rb.useGravity = false;
 
         //Property Values
-        Health     = MaxHealth;
         _maxSpeed  = MaxSpeed;
         _speed     = Speed;
         _gravity   = Gravity;
+    }
+
+    void Update()
+    {
+        if(!Dead) 
+        {
+            Health = Math.Clamp(Health + Time.deltaTime*2, 0, 100);
+            _damageScreen.color = new Color(1,1,1, (Health / 80*-1)+1);
+        }
+        else
+        {
+            _damageScreen.color = new Color(1,1,1,0);
+        }
     }
 
     void FixedUpdate()
@@ -102,6 +123,11 @@ public class PlayerMovement : MonoBehaviour
                 ForwardVelocityMagnitude = ForwardVelocity.magnitude;
                 ForwardVelocityMagnitude = (float)Math.Round(ForwardVelocityMagnitude, 2);
             #endregion
+
+            SmoothVelocity = Vector3.Slerp(SmoothVelocity, rb.velocity, 0.15f);
+            SmoothVelocity.x    = (float)Math.Round(SmoothVelocity.x, 4);
+            SmoothVelocity.y    = (float)Math.Round(SmoothVelocity.y, 4);
+            SmoothVelocity.z    = (float)Math.Round(SmoothVelocity.z, 4);
 
             //Gravity
             rb.AddForce(Physics.gravity * Gravity /10);
@@ -232,6 +258,21 @@ public class PlayerMovement : MonoBehaviour
     //***********************************************************************
     //***********************************************************************
     //Extra Logic
+    public void TakeDamage(float Damage = 100)
+    {
+        Health -= Damage;
+        playerSFX.enemy.GetComponent<CinemachineImpulseSource>().GenerateImpulseWithForce(-2);
+        playerSFX.PlaySound(playerSFX.Damage);
+        if(Health < 0)
+        {
+            Dead = true;
+            _deathScreen.color = new Color(1,1,1,1);
+            playerSFX.enemy.GetComponent<CinemachineImpulseSource>().GenerateImpulseWithForce(-5);
+            playerSFX.StopSound(playerSFX.Damage);
+            playerSFX.PlaySound(playerSFX.Death);
+        }
+    }
+
     public void OnPause(InputAction.CallbackContext context)
     {
         if(context.started)

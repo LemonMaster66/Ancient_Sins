@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CameraFX : MonoBehaviour
 {
@@ -34,6 +35,8 @@ public class CameraFX : MonoBehaviour
 
     void Update()
     {
+        if(playerMovement.Dead) return;
+
         //Dutch Tilt + Field Of View
         CMvc.m_Lens.Dutch = Mathf.SmoothDamp(CMvc.m_Lens.Dutch, TargetDutch, ref BlendDutch, 0.1f);
         CMvc.m_Lens.FieldOfView = Mathf.SmoothDamp(CMvc.m_Lens.FieldOfView, TargetFOV, ref BlendFOV, 0.2f);

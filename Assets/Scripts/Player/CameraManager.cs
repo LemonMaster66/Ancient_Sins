@@ -128,6 +128,7 @@ public class CameraManager : MonoBehaviour
 
         TakenPhoto = true;
         playerSFX.PlaySound(playerSFX.Capture, 1, 1, 0.05f);
+        playerSFX.enemy.HearSound(transform.position, 100, 15);
     }
 
     [Button]
