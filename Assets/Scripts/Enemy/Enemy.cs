@@ -69,7 +69,7 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(playerMovement.Dead) return;
+        if(playerMovement.Dead || AttackCooldown > 0) return;
 
         agent.SetDestination(Target.position);
 
@@ -90,7 +90,7 @@ public class Enemy : MonoBehaviour
         {
             MoveUpdate();
             if(IgnorePlayer || Watched || State != "Chasing") return;
-            if(AttackCooldown == 0 && CalculatePathDistance(transform.position, playerMovement.transform.position) < 5) Attack(90);
+            if(AttackCooldown == 0 && Vector3.Distance(transform.position, playerMovement.transform.position) < 5) Attack(90);
         }
     }
 
@@ -107,7 +107,7 @@ public class Enemy : MonoBehaviour
         {
             SetState(OcclusionCheck() ? "Searching" : "Chasing");
             Watched = false;
-            AttackCooldown = 0.3f;
+            if(AttackCooldown > 0) AttackCooldown = 0.25f;
         }
     }
 
