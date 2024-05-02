@@ -41,6 +41,7 @@ MonoBehaviour:
         - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-141526859-0
         - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-7951114688597718866-1260489950
         - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-1324328148-0
+        - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-7951114688597718866-997744577
         values:
         - colorIndex: 9
           iconNameOrGuid: Camera Icon
@@ -88,3 +89,5 @@ MonoBehaviour:
           iconNameOrGuid: 
         - colorIndex: 0
           iconNameOrGuid: ScriptableObject Icon
+        - colorIndex: 1
+          iconNameOrGuid: 

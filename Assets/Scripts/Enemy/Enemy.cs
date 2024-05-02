@@ -28,7 +28,7 @@ public class Enemy : MonoBehaviour
     [Variants("Wandering", "Searching", "Hearing", "Chasing")]
     public string State;
     
-    public bool Active;
+    public bool Active = true;
     public bool Watched;
     public bool IgnorePlayer;
     
@@ -56,6 +56,7 @@ public class Enemy : MonoBehaviour
         playerMovement = FindAnyObjectByType<PlayerMovement>();
         boundsCollider = transform.GetChild(0).GetComponent<Collider>();
         audioSource = GetComponentInChildren<AudioSource>();
+        FindAnyObjectByType<PlayerSFX>().enemy = this;
     }
 
     void Update()
@@ -69,7 +70,7 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(playerMovement.Dead || AttackCooldown > 0) return;
+        if(playerMovement.Dead || AttackCooldown > 0 || !Active) return;
 
         agent.SetDestination(Target.position);
 

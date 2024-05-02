@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
-public class PlayerSFX : MonoBehaviour
+public class PlayerSFX : AudioManager
 {
-    public GameObject AudioPrefab;
     [Space(8)]
     public float TimeBetweenSteps;
     public float stepTimer;
@@ -52,7 +51,7 @@ public class PlayerSFX : MonoBehaviour
             else
             {
                 PlayRandomSound(RunStep,  0.75f, 1, 0.2f);
-                enemy.HearSound(transform.position, 35, 5);
+                if(enemy != null) enemy.HearSound(transform.position, 35, 5);
             }
             stepTimer = TimeBetweenSteps;
         }
@@ -62,50 +61,6 @@ public class PlayerSFX : MonoBehaviour
         else                  TimeBetweenSteps = 0.4f;
 
         stepTimer = (float)Math.Round(stepTimer, 2);
-    }
-
-
-
-    public void PlaySound(AudioClip audioClip, float Volume = 1, float Pitch = 1, float PitchVariation = 0, bool Loop = false)
-    {
-        GameObject AudioObj = Instantiate(AudioPrefab, PM.transform.position, Quaternion.identity, transform);
-        AudioObj.name = audioClip.name;
-
-        AudioSource audioSource = AudioObj.GetComponent<AudioSource>();
-        audioSource.clip   =  audioClip;
-        audioSource.volume =  Volume;
-        audioSource.pitch  =  Pitch + UnityEngine.Random.Range(-PitchVariation, PitchVariation);
-        audioSource.loop   =  Loop;
-
-        audioSource.Play();
-        if(!Loop) Destroy(AudioObj, audioClip.length);
-    }
-
-
-    public void PlayRandomSound(AudioClip[] audioClip, float Volume = 1, float Pitch = 1, float PitchVariation = 0, bool Loop = false)
-    {
-        GameObject AudioObj = Instantiate(AudioPrefab, PM.transform.position, Quaternion.identity, transform);
-
-        AudioSource audioSource = AudioObj.GetComponent<AudioSource>();
-        AudioClip RandomClip = audioClip[UnityEngine.Random.Range(0, audioClip.Length)];
-
-        AudioObj.name = RandomClip.name;
-
-        audioSource.clip     = RandomClip;
-        audioSource.volume   = Volume;
-        audioSource.pitch    = Pitch + UnityEngine.Random.Range(-PitchVariation, PitchVariation);
-
-        audioSource.Play();
-        Destroy(AudioObj, RandomClip.length);
-    }
-
-    public void StopSound(AudioClip audioClip)
-    {
-        AudioSource[] audioSources = GetComponentsInChildren<AudioSource>();
-        foreach(AudioSource audioSource in audioSources)
-        {
-            if(audioSource.clip == audioClip) Destroy(audioSource.gameObject);
-        }
     }
 }
 
