@@ -124,13 +124,9 @@ public class Enemy : MonoBehaviour
     {
         foreach(Transform transform in Points)
         {
-            //if it Does hit something
             if(Physics.Raycast(transform.position, playerMovement.transform.position-transform.position, out RaycastHit hit, 100000, OcclusionLayerMask))
             {
-                // If it hits the Player
-                if(hit.transform.tag == "Player") return false;
-                     //DrawThickRay(transform.position, cam.transform.position-transform.position, Color.green, 0, 0.0065f);
-                //else DrawThickRay(transform.position, cam.transform.position-transform.position, Color.red, 0, 0.0065f);
+                if(hit.transform.tag == "Player") return hit.transform.tag == "Player";
             }
         }
         return true;

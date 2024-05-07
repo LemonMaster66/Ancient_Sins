@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,7 +11,8 @@ using VInspector;
 
 public class CameraManager : MonoBehaviour
 {
-    public List<Texture2D> Photos = new List<Texture2D>();
+    //public List<Texture2D> Photos = new List<Texture2D>();
+    public VInspector.SerializedDictionary<Texture2D, float> Photos;
     public int ActivePhoto;
 
     [Space(10)]
@@ -33,9 +35,11 @@ public class CameraManager : MonoBehaviour
     [Foldout("References")]
     [Range(0,1)]   public float AnimatorWeight;
 
-    public  RenderTexture    renderTexture;
     public  Texture2D        renderingImage;
+    public  RenderTexture    renderTexture;
+
     public  Texture2D        renderStorage;
+    public  float            valueStorage;
 
     private Camera           cam;
     private CameraFX         cameraFX;
@@ -72,8 +76,10 @@ public class CameraManager : MonoBehaviour
             captureCooldownTime =  0;
             Rendering = false;
 
-            Photos[Photos.Count-1] = renderStorage;
-            if(InGallery && ActivePhoto == Photos.Count-1) DisplayPhoto(Photos[Photos.Count-1]);
+            var lastKey = Photos.ElementAt(Photos.Count - 1).Key;
+            Photos.Remove(lastKey);
+            Photos.Add(renderStorage, valueStorage);
+            if(InGallery && ActivePhoto == Photos.Count-1) DisplayPhoto(Photos.ElementAt(Photos.Count-1).Key);
         }
     }
     void Update()
@@ -117,25 +123,48 @@ public class CameraManager : MonoBehaviour
             texture2D.Apply();
             RenderTexture.active = null;
         #endregion
-        
-        if(TakenPhoto) ActivePhoto = Photos.Count;
 
-        if(TakenPhoto) Photos.Add(renderingImage);
-        else Photos[0] = renderingImage;
+        if (TakenPhoto)
+        {
+            ActivePhoto = Photos.Count;
+            Photos.Add(renderingImage, 0);
+        }
+        else
+        {
+            Photos.Clear();
+            Photos.Add(renderingImage, 0);
+        }
 
         renderStorage = texture2D;
         if(InGallery) DisplayPhoto(renderingImage);
 
         TakenPhoto = true;
+
+        valueStorage = (float)Math.Round(CalculateArtefacts(), 1);
         playerSFX.PlaySound(playerSFX.Capture, 1, 1, 0.05f);
         playerSFX.enemy.HearSound(transform.position, 100, 15);
+    }
+
+    public float CalculateArtefacts()
+    {
+        float Money = 0;
+        Prop[] props = FindObjectsByType<Prop>(FindObjectsSortMode.None);
+        foreach(Prop prop in props)
+        {
+            if(prop.Artefact && prop.FrustumCheck() && !prop.OcclusionCheck())
+            {
+                Money += prop.Value * prop.ValueFalloff.Evaluate((float)prop.TimesPhotographed/3.5f);
+                prop.TimesPhotographed++;
+            }
+        }
+        return Money;
     }
 
     [Button]
     public void DisplayPhoto(Texture2D texture2D)
     {
         Renderer Screen = cameraObj.GetComponent<Renderer>();
-        if(texture2D == null) Screen.material.mainTexture = Photos[ActivePhoto];
+        if(texture2D == null) Screen.material.mainTexture = Photos.ElementAt(ActivePhoto).Key;
         else                  Screen.material.mainTexture = texture2D;
 
         ApplyText();
@@ -162,8 +191,12 @@ public class CameraManager : MonoBehaviour
     public void OnZoom(InputAction.CallbackContext context)
     {
         float inputScroll = context.ReadValue<float>();
+        if(inputScroll == 0 || InGallery) return;
+
         Zoom = Math.Clamp(Zoom + inputScroll *10, 0, 100);
         cam.fieldOfView = 60 - Zoom/2;
+
+        playerSFX.PlaySound(playerSFX.ZoomInterval, 0.5f, 0.6f+(Zoom/200));
     }
 
 
@@ -176,8 +209,16 @@ public class CameraManager : MonoBehaviour
             InGallery     = InGallery ? false : true;
             tmPro.enabled = InGallery ? true : false;
 
-            if(InGallery) Screen.material.mainTexture = Photos[Photos.Count-1];
-            else          Screen.material.mainTexture = renderTexture;
+            if(InGallery)
+            {
+                Screen.material.mainTexture = Photos.ElementAt(Photos.Count-1).Key;
+                playerSFX.PlaySound(playerSFX.ViewGallery, 0.4f, 1f);
+            }
+            else          
+            {
+                Screen.material.mainTexture = renderTexture;
+                playerSFX.PlaySound(playerSFX.ViewGallery, 0.4f, 0.8f);
+            }
 
             ApplyText();
         }
@@ -188,14 +229,15 @@ public class CameraManager : MonoBehaviour
     {
         if(Photos.Count < 1) return;
         float input = context.ReadValue<float>();
-        if(input != 0)
+        if(input != 0 && InGallery)
         {
             ActivePhoto += (int)input;
 
             if(ActivePhoto < 0)             ActivePhoto = Photos.Count-1;
             if(ActivePhoto > Photos.Count-1) ActivePhoto = 0;
 
-            if(InGallery) DisplayPhoto(Photos[ActivePhoto]);
+            if(InGallery) DisplayPhoto(Photos.ElementAt(ActivePhoto).Key);
+            playerSFX.PlaySound(playerSFX.ZoomInterval, 0.5f, 0.5f + ((float)ActivePhoto / Photos.Count)/2);
         }
     }
 

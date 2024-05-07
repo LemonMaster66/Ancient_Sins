@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
+using VFolders.Libs;
 using VInspector;
 
 public class Prop : MonoBehaviour
@@ -14,6 +15,7 @@ public class Prop : MonoBehaviour
 
     [ShowIf("Artefact")] [Header("Artefact Properties")]
     public float Value;
+    public int   TimesPhotographed;
     public AnimationCurve ValueFalloff;
 
     [ShowIf("PhysicsProp")] [Header("Physics Properties")]
@@ -22,31 +24,54 @@ public class Prop : MonoBehaviour
 
     [ShowIf("Destructable")] [Header("Destruction Properties")]
     public GameObject DestructionProp;
-    public float toShatterMagnitude;
     public float FragmentGravity;
     [EndIf]
 
 
     [Tab("Audio")]
+    [RangeResettable(0,2.5f)] public float Force;
+
+    [Space(8)]
+
+    [RangeResettable(0,2.5f)] public float MediumThreshold = 0.8f;
+    [RangeResettable(0,2.5f)] public float LargeThreshold = 1.3f;
+    [ShowIf("Destructable")]
+    [RangeResettable(0,2.5f)] public float SmallShatterThreshold = 1.85f;
+    [RangeResettable(0,2.5f)] public float LargeShatterThreshold = 2.1f;
+    [EndIf]
+    
+    [Space(10)]
+
     public AudioClip[] CollideSmallSfx;
     public AudioClip[] CollideMediumSfx;
     public AudioClip[] CollideLargeSfx;
 
+    [Space(10)]
+
+    [ShowIf("Destructable")]
     public AudioClip[] ShatterSmallSfx;
     public AudioClip[] ShatterLargeSfx;
+    [EndIf]
 
 
     [Tab("Settings")]
     public float sfxCooldown;
     [Space(6)]
-    public Rigidbody rb;
-    public Collider colliderBounds;
-    public AudioManager audioManager;
+    public Rigidbody      rb;
+    public Camera         cam;
+    public AudioManager   audioManager;
+    public PlayerMovement playerMovement;
+    public Collider       colliderBounds;
+    private Plane[]       frustumPlanes;
 
 
     public void Awake()
     {
         audioManager = GetComponent<AudioManager>();
+        cam = Camera.main;
+        audioManager = GetComponent<AudioManager>();
+        playerMovement = FindAnyObjectByType<PlayerMovement>();
+        colliderBounds = GetComponent<Collider>();
 
         if(PhysicsProp)
         {
@@ -55,20 +80,82 @@ public class Prop : MonoBehaviour
         }
     }
 
-    public void Update()
+    public void FixedUpdate()
     {
         rb.AddForce(Vector3.down*Gravity/6f * rb.mass);
 
         if(sfxCooldown > 0) sfxCooldown = Math.Clamp(sfxCooldown - Time.deltaTime, 0, math.INFINITY);
     }
+
+    public bool FrustumCheck()   // True if its in the Cameras Bounds
+    {
+        Bounds bounds = colliderBounds.bounds;
+        frustumPlanes = GeometryUtility.CalculateFrustumPlanes(cam);
+
+        return GeometryUtility.TestPlanesAABB(frustumPlanes, bounds);
+    }
+    public bool OcclusionCheck() // True if its Occluded
+    {
+        if(Physics.Raycast(transform.position, playerMovement.transform.position-transform.position, out RaycastHit hit, 100000))
+        {
+            return hit.transform.tag != "Player";
+        }
+        else return false;
+    }
     
+
+    //**************************************************
+    //Physics Stuff
     public void OnCollisionEnter(Collision collision)
     {
-        Debug.Log(collision.relativeVelocity.magnitude);
-        DebugPlus.DrawWireSphere(transform.position, 1).Duration(0.1f).Color(Color.green);
-
-        float volume = (collision.relativeVelocity.magnitude/5) * rb.velocity.magnitude/10;
-        if(sfxCooldown == 0) audioManager.PlayRandomSound(CollideSmallSfx, volume, 1, 0.2f);
+        Force = (collision.relativeVelocity.magnitude * Math.Clamp(rb.velocity.magnitude, 0, 1) / 10) + 0.1f;
+        if(sfxCooldown == 0) CollideFX(Force, collision.relativeVelocity);
         sfxCooldown = 0.25f;
+    }
+
+    public void CollideFX(float Force, Vector3 relativeVelocity)
+    {
+        if(Force > LargeShatterThreshold && ShatterLargeSfx.Length > 0 && Destructable)
+        {
+            Shatter(relativeVelocity);
+            audioManager.PlayRandomSound(ShatterLargeSfx, Force, 1, 0.2f);
+        }
+        else if(Force > SmallShatterThreshold && ShatterSmallSfx.Length > 0 && Destructable)
+        {
+            Shatter(relativeVelocity);
+            audioManager.PlayRandomSound(ShatterSmallSfx, Force, 1, 0.2f);
+        }
+        else if(Force > LargeThreshold && CollideLargeSfx.Length > 0)
+        {
+            audioManager.PlayRandomSound(CollideLargeSfx, Force, 1, 0.2f);
+        }
+        else if(Force > MediumThreshold && CollideMediumSfx.Length > 0)
+        {
+            audioManager.PlayRandomSound(CollideMediumSfx, Force, 1, 0.2f);
+        }
+        else if(CollideSmallSfx.Length > 0)
+        {
+            audioManager.PlayRandomSound(CollideSmallSfx, Force, 1, 0.2f);
+        }
+    }
+    public void Shatter(Vector3 relativeVelocity)
+    {
+        Destructable = false;
+        Value = 0;
+
+        if(gameObject.TryGetComponent<Outline>(out Outline outline)) outline.enabled = false; 
+
+        foreach(Transform transform in transform.GetChildren())
+        {
+            transform.parent = null;
+
+            Rigidbody FragRb = transform.gameObject.AddComponent(typeof(Rigidbody)) as Rigidbody;
+            ExtraGravity gravity = transform.gameObject.AddComponent(typeof(ExtraGravity)) as ExtraGravity;
+
+            FragRb.velocity = relativeVelocity /10;
+            FragRb.useGravity = false;
+            FragRb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+            gravity.Gravity = FragmentGravity;
+        }
     }
 }

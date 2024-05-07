@@ -32,12 +32,9 @@ public class PlayerMovement : MonoBehaviour
     public bool HoldingRun     = false;
 
 
-    [Header("Transform Stuff")]
-    public Vector3 TargetScale;
-
-
     #region Debug Stats
         [Foldout("Debug Stats")]
+        public Vector3     TargetScale;
         public Vector3     PlayerVelocity;
         public Vector3     SmoothVelocity;
         public float       VelocityMagnitude;
@@ -101,6 +98,11 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             _damageScreen.color = new Color(1,1,1,0);
+        }
+
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            rb.AddForce(CamF * 8000);
         }
     }
 
