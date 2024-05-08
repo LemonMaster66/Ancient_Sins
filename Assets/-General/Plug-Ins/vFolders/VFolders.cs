@@ -1398,8 +1398,7 @@ namespace VFolders
 
                 data = treeViewController?.GetPropertyValue("data");
 
-                if (!Application.isPlaying)
-                    expandedIds = treeViewController?.GetPropertyValue("state").GetPropertyValue<List<int>>("expandedIDs") ?? new List<int>();
+                expandedIds = treeViewController?.GetPropertyValue("state")?.GetPropertyValue<List<int>>("expandedIDs") ?? new List<int>();
 
 
                 EditorApplication.delayCall -= UpdateState;
@@ -1794,7 +1793,7 @@ namespace VFolders
 
         class FolderStateChangeDetector : AssetPostprocessor
         {
-#if UNITY_2021_1_OR_NEWER
+#if UNITY_2021_2_OR_NEWER
             static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths, bool didDomainReload)
 #else
             static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
@@ -1972,12 +1971,31 @@ namespace VFolders
                 catch { }
 
             }
+            void fixIconNamesForUnity6()
+            {
+                if (!Application.unityVersion.Contains("6000")) return;
+                if (EditorPrefs.GetBool("vFolders-iconNamesForUnity6Fixed-" + GetProjectId(), false)) return;
+                if (!palette) return;
+                if (!data) return;
+
+                foreach (var iconRow in palette.iconRows)
+                    if (iconRow.builtinIcons.Contains("PhysicMaterial Icon"))
+                        iconRow.builtinIcons[iconRow.builtinIcons.IndexOf("PhysicMaterial Icon")] = "PhysicsMaterial Icon";
+
+                foreach (var folderData in data.folderDatas_byGuid.Values)
+                    if (folderData.iconNameOrGuid == "PhysicMaterial Icon")
+                        folderData.iconNameOrGuid = "PhysicsMaterial Icon";
+
+                EditorPrefs.SetBool("vFolders-iconNamesForUnity6Fixed-" + GetProjectId(), true);
+
+            }
 
             subscribe();
             loadData();
             loadPalette();
             loadDataAndPaletteDelayed();
             migrateDataFromV1();
+            fixIconNamesForUnity6();
 
         }
 
@@ -2001,7 +2019,7 @@ namespace VFolders
 
 
 
-        const string version = "2.0.7";
+        const string version = "2.0.9";
 
     }
 }

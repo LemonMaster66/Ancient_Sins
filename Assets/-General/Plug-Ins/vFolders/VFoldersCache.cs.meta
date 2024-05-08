@@ -13,6 +13,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 263644
   packageName: vFolders 2
-  packageVersion: 2.0.6
-  assetPath: Assets/vFolders/VFoldersCache.cs
-  uploadId: 646186
+  packageVersion: 2.0.8
+  assetPath: Assets/-General/Plug-Ins/vFolders/VFoldersCache.cs
+  uploadId: 661972

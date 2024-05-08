@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
 using VInspector;
+using PalexUtilities;
 
 public class Enemy : MonoBehaviour
 {
@@ -76,10 +77,10 @@ public class Enemy : MonoBehaviour
 
         if(!IgnorePlayer && AttackCooldown == 0)
         {
-            if(FrustumCheck() && !OcclusionCheck()) Freeze(true);
+            if(Tools.FrustumCheck(boundsCollider, cam) && !Tools.OcclusionCheck(Points, playerMovement.transform, OcclusionLayerMask)) Freeze(true);
             else                                    Freeze(false);
 
-            if(!OcclusionCheck())
+            if(!Tools.OcclusionCheck(Points, playerMovement.transform, OcclusionLayerMask))
             {
                 if(!Watched) SetState("Chasing");
                 Target.position = playerMovement.transform.position;
@@ -87,7 +88,7 @@ public class Enemy : MonoBehaviour
         }
 
         //Next Movement
-        if(CalculatePathDistance(transform.position, agent.destination) < 4)
+        if(Tools.CalculatePathDistance(transform.position, agent.destination, agent) < 4)
         {
             MoveUpdate();
             if(IgnorePlayer || Watched || State != "Chasing") return;
@@ -106,37 +107,16 @@ public class Enemy : MonoBehaviour
         }
         else if(!state && Watched) //Unfreeze
         {
-            SetState(OcclusionCheck() ? "Searching" : "Chasing");
+            SetState(Tools.OcclusionCheck(Points, playerMovement.transform, OcclusionLayerMask) ? "Searching" : "Chasing");
             Watched = false;
             if(AttackCooldown > 0) AttackCooldown = 0.25f;
         }
-    }
-
-    
-    public bool FrustumCheck()   // True if its in the Cameras Bounds
-    {
-        Bounds bounds = boundsCollider.bounds;
-        frustumPlanes = GeometryUtility.CalculateFrustumPlanes(cam);
-
-        return GeometryUtility.TestPlanesAABB(frustumPlanes, bounds);
-    }
-    public bool OcclusionCheck() // True if its Occluded
-    {
-        foreach(Transform transform in Points)
-        {
-            if(Physics.Raycast(transform.position, playerMovement.transform.position-transform.position, out RaycastHit hit, 100000, OcclusionLayerMask))
-            {
-                if(hit.transform.tag == "Player") return hit.transform.tag == "Player";
-            }
-        }
-        return true;
     }
 
 
     public Vector3 RandomNavmeshLocation(float Range = 20, float MinDistance = 0, float MaxDirectionDotDifference = -1)
     {
         int Iterations = 0;
-        LastTarget.position = Target.position;
 
         while(Iterations < 20)
         {
@@ -150,8 +130,8 @@ public class Enemy : MonoBehaviour
                 Vector3 LastDir = Vector3.Normalize(Target.position - transform.position);
                 Vector3 NextDir = Vector3.Normalize(hit.position    - transform.position);
 
-                if(CalculatePathDistance(Target.position, hit.position) < MinDistance) continue;
-                if(CalculatePathDistance(Target.position, hit.position) > Range+3)     continue;
+                if(Tools.CalculatePathDistance(Target.position, hit.position, agent) < MinDistance) continue;
+                if(Tools.CalculatePathDistance(Target.position, hit.position, agent) > Range+3)     continue;
                 
                 if(Vector3.Dot(LastDir, NextDir) < MaxDirectionDotDifference && Iterations < 20) continue;
 
@@ -171,20 +151,7 @@ public class Enemy : MonoBehaviour
         if (NavMesh.SamplePosition(randomDirection, out hit, Range, 1)) finalPosition = hit.position;
         return finalPosition;
     }
-    float CalculatePathDistance(Vector3 startPos, Vector3 TargetPos)
-    {
-        NavMeshPath path = new NavMeshPath();
-        float distance = 0;
 
-        if(NavMesh.CalculatePath(startPos, TargetPos, agent.areaMask, path))
-        {
-            for(int i = 1; i < path.corners.Length; i++)
-            {
-                distance += Vector3.Distance(path.corners[i-1], path.corners[i]);
-            }
-        }
-        return distance;
-    }
 
     public void MoveUpdate()
     {
@@ -201,7 +168,7 @@ public class Enemy : MonoBehaviour
         }
         if(State == "Chasing")
         {
-            if(!OcclusionCheck()) Target.position = playerMovement.transform.position;
+            if(!Tools.OcclusionCheck(Points, playerMovement.transform, OcclusionLayerMask)) Target.position = playerMovement.transform.position;
             else
             {
                 SetState("Searching");
@@ -236,19 +203,6 @@ public class Enemy : MonoBehaviour
             SetState("Hearing");
             CurrentNoisePriority = priority;
             Target.position = position;
-        }
-    }
-
-
-
-    void DrawThickRay(Vector3 start, Vector3 dir, Color color, float duration, float Thickness)
-    {
-        for(int i = 0; i < 200; i++)
-        {
-            start.x += UnityEngine.Random.Range(Thickness, -Thickness);
-            start.y += UnityEngine.Random.Range(Thickness, -Thickness);
-            start.z += UnityEngine.Random.Range(Thickness, -Thickness);
-            Debug.DrawRay(start, dir, color, duration);
         }
     }
 }

@@ -102,7 +102,7 @@ public class PlayerMovement : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.E))
         {
-            rb.AddForce(CamF * 8000);
+            rb.AddForce(CamF * 5000);
         }
     }
 

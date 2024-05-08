@@ -2,9 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
-using VFolders.Libs;
+using PalexUtilities;
 using VInspector;
 
 public class Prop : MonoBehaviour
@@ -61,6 +60,7 @@ public class Prop : MonoBehaviour
     public Camera         cam;
     public AudioManager   audioManager;
     public PlayerMovement playerMovement;
+    public CameraManager  cameraManager;
     public Collider       colliderBounds;
     private Plane[]       frustumPlanes;
 
@@ -68,10 +68,10 @@ public class Prop : MonoBehaviour
     public void Awake()
     {
         audioManager = GetComponent<AudioManager>();
-        cam = Camera.main;
-        audioManager = GetComponent<AudioManager>();
         playerMovement = FindAnyObjectByType<PlayerMovement>();
+        cameraManager = FindAnyObjectByType<CameraManager>();
         colliderBounds = GetComponent<Collider>();
+        cam = FindAnyObjectByType<CameraManager>().cam;
 
         if(PhysicsProp)
         {
@@ -85,22 +85,6 @@ public class Prop : MonoBehaviour
         rb.AddForce(Vector3.down*Gravity/6f * rb.mass);
 
         if(sfxCooldown > 0) sfxCooldown = Math.Clamp(sfxCooldown - Time.deltaTime, 0, math.INFINITY);
-    }
-
-    public bool FrustumCheck()   // True if its in the Cameras Bounds
-    {
-        Bounds bounds = colliderBounds.bounds;
-        frustumPlanes = GeometryUtility.CalculateFrustumPlanes(cam);
-
-        return GeometryUtility.TestPlanesAABB(frustumPlanes, bounds);
-    }
-    public bool OcclusionCheck() // True if its Occluded
-    {
-        if(Physics.Raycast(transform.position, playerMovement.transform.position-transform.position, out RaycastHit hit, 100000))
-        {
-            return hit.transform.tag != "Player";
-        }
-        else return false;
     }
     
 
@@ -143,7 +127,7 @@ public class Prop : MonoBehaviour
         Destructable = false;
         Value = 0;
 
-        if(gameObject.TryGetComponent<Outline>(out Outline outline)) outline.enabled = false; 
+        if(gameObject.TryGetComponent(out Outline outline)) outline.enabled = false; 
 
         foreach(Transform transform in transform.GetChildren())
         {

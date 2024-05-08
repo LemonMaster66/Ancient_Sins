@@ -768,7 +768,6 @@ namespace VFolders.Libs
             texture2D.Apply();
 
             return texture2D;
-
         }
         public static RenderTexture ToRenderTexture(this Texture2D texture2d)
         {
@@ -1904,6 +1903,9 @@ namespace VFolders.Libs
 
             var textureWidth = croppedRectWidth + blurRadiusScaled * 2;
             var textureHeight = croppedRectHeight + blurRadiusScaled * 2;
+
+            if (textureWidth <= 0) return rect; // happens on 2021.1.28
+            if (textureHeight <= 0) return rect; // happens on 2021.1.28
 
             GUIStyle style;
 
