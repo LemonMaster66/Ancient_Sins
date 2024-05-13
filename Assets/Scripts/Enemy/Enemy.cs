@@ -39,9 +39,10 @@ public class Enemy : MonoBehaviour
     
 
     #region References
+        private PlayerMovement playerMovement;
+        private PlayerStats    playerStats;
         private Camera         cam;
         private NavMeshAgent   agent;
-        private PlayerMovement playerMovement;
         private Plane[]        frustumPlanes;
         private Collider       boundsCollider;
         private AudioSource    audioSource;
@@ -52,9 +53,10 @@ public class Enemy : MonoBehaviour
 
     void Awake()
     {
+        playerMovement = FindAnyObjectByType<PlayerMovement>();
+        playerStats    = FindAnyObjectByType<PlayerStats>();
         cam = Camera.main;
         agent = GetComponentInParent<NavMeshAgent>();
-        playerMovement = FindAnyObjectByType<PlayerMovement>();
         boundsCollider = transform.GetChild(0).GetComponent<Collider>();
         audioSource = GetComponentInChildren<AudioSource>();
         FindAnyObjectByType<PlayerSFX>().enemy = this;
@@ -71,16 +73,16 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(playerMovement.Dead || AttackCooldown > 0 || !Active) return;
+        if(playerStats.Dead || AttackCooldown > 0 || !Active) return;
 
         agent.SetDestination(Target.position);
 
         if(!IgnorePlayer && AttackCooldown == 0)
         {
-            if(Tools.FrustumCheck(boundsCollider, cam) && !Tools.OcclusionCheck(Points, playerMovement.transform, OcclusionLayerMask)) Freeze(true);
+            if(Tools.FrustumCheck(boundsCollider, cam) && !Tools.OcclusionCheck(Points, playerMovement.Camera, OcclusionLayerMask)) Freeze(true);
             else                                    Freeze(false);
 
-            if(!Tools.OcclusionCheck(Points, playerMovement.transform, OcclusionLayerMask))
+            if(!Tools.OcclusionCheck(Points, playerMovement.Camera, OcclusionLayerMask))
             {
                 if(!Watched) SetState("Chasing");
                 Target.position = playerMovement.transform.position;
@@ -107,7 +109,7 @@ public class Enemy : MonoBehaviour
         }
         else if(!state && Watched) //Unfreeze
         {
-            SetState(Tools.OcclusionCheck(Points, playerMovement.transform, OcclusionLayerMask) ? "Searching" : "Chasing");
+            SetState(Tools.OcclusionCheck(Points, playerMovement.Camera, OcclusionLayerMask) ? "Searching" : "Chasing");
             Watched = false;
             if(AttackCooldown > 0) AttackCooldown = 0.25f;
         }
@@ -168,7 +170,7 @@ public class Enemy : MonoBehaviour
         }
         if(State == "Chasing")
         {
-            if(!Tools.OcclusionCheck(Points, playerMovement.transform, OcclusionLayerMask)) Target.position = playerMovement.transform.position;
+            if(!Tools.OcclusionCheck(Points, playerMovement.Camera, OcclusionLayerMask)) Target.position = playerMovement.transform.position;
             else
             {
                 SetState("Searching");
@@ -188,7 +190,7 @@ public class Enemy : MonoBehaviour
 
     public void Attack(float Damage = 100)
     {
-        playerMovement.TakeDamage(Damage);
+        playerStats.TakeDamage(Damage);
         AttackCooldown = 0.3f;
     }
     public void HearSound(Vector3 position, float Size = 1000, float priority = 1000)
@@ -199,7 +201,7 @@ public class Enemy : MonoBehaviour
         {
             if(Vector3.Distance(transform.position, position) > Size) return;
 
-            DebugPlus.DrawWireSphere(position, Size).Duration(0.3f);
+            //DebugPlus.DrawWireSphere(position, Size).Duration(0.3f);
             SetState("Hearing");
             CurrentNoisePriority = priority;
             Target.position = position;

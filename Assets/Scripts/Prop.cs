@@ -60,6 +60,7 @@ public class Prop : MonoBehaviour
     public Camera         cam;
     public AudioManager   audioManager;
     public PlayerMovement playerMovement;
+    public Enemy          enemy;
     public CameraManager  cameraManager;
     public Collider       colliderBounds;
     private Plane[]       frustumPlanes;
@@ -68,7 +69,10 @@ public class Prop : MonoBehaviour
     public void Awake()
     {
         audioManager = GetComponent<AudioManager>();
+        if(audioManager == null) gameObject.AddComponent<AudioManager>();
+
         playerMovement = FindAnyObjectByType<PlayerMovement>();
+        enemy = FindAnyObjectByType<Enemy>();
         cameraManager = FindAnyObjectByType<CameraManager>();
         colliderBounds = GetComponent<Collider>();
         cam = FindAnyObjectByType<CameraManager>().cam;
@@ -82,7 +86,7 @@ public class Prop : MonoBehaviour
 
     public void FixedUpdate()
     {
-        rb.AddForce(Vector3.down*Gravity/6f * rb.mass);
+        if(rb != null) rb.AddForce(Vector3.down*Gravity/6f * rb.mass);
 
         if(sfxCooldown > 0) sfxCooldown = Math.Clamp(sfxCooldown - Time.deltaTime, 0, math.INFINITY);
     }
@@ -92,6 +96,7 @@ public class Prop : MonoBehaviour
     //Physics Stuff
     public void OnCollisionEnter(Collision collision)
     {
+        if(rb != null)
         Force = (collision.relativeVelocity.magnitude * Math.Clamp(rb.velocity.magnitude, 0, 1) / 10) + 0.1f;
         if(sfxCooldown == 0) CollideFX(Force, collision.relativeVelocity);
         sfxCooldown = 0.25f;
@@ -103,19 +108,23 @@ public class Prop : MonoBehaviour
         {
             Shatter(relativeVelocity);
             audioManager.PlayRandomSound(ShatterLargeSfx, Force, 1, 0.2f);
+            enemy.HearSound(transform.position, 100, 50);
         }
         else if(Force > SmallShatterThreshold && ShatterSmallSfx.Length > 0 && Destructable)
         {
             Shatter(relativeVelocity);
             audioManager.PlayRandomSound(ShatterSmallSfx, Force, 1, 0.2f);
+            enemy.HearSound(transform.position, 75, 35);
         }
         else if(Force > LargeThreshold && CollideLargeSfx.Length > 0)
         {
             audioManager.PlayRandomSound(CollideLargeSfx, Force, 1, 0.2f);
+            enemy.HearSound(transform.position, 50, 20);
         }
         else if(Force > MediumThreshold && CollideMediumSfx.Length > 0)
         {
             audioManager.PlayRandomSound(CollideMediumSfx, Force, 1, 0.2f);
+            enemy.HearSound(transform.position, 35, 10);
         }
         else if(CollideSmallSfx.Length > 0)
         {

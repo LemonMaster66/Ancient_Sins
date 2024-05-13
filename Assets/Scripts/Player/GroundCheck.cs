@@ -37,7 +37,7 @@ public class GroundCheck : MonoBehaviour
             if(timers.JumpBuffer > 0) playerMovement.Jump();
             else playerMovement.HasJumped = false;
 
-            cameraFX.CMis.GenerateImpulseWithForce(Math.Clamp(playerMovement.SmoothVelocity.y, -25, 0) * (cameraFX.CMis.enabled ? 1 : 0));
+            cameraFX.CMis.GenerateImpulseWithForce(Math.Clamp(playerMovement.SmoothVelocity.y, -22, 0) * (cameraFX.CMis.enabled ? 1 : 0));
             playerSFX.PlayRandomSound(playerSFX.Land, playerMovement.SmoothVelocity.y*-1/50, 1f, 0.15f, false);
             if(playerSFX.enemy != null) playerSFX.enemy.HearSound(transform.position, (50*Math.Clamp(playerMovement.SmoothVelocity.y*-1, 0,1)), 10);
         }

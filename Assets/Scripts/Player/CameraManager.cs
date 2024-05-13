@@ -45,11 +45,12 @@ public class CameraManager : MonoBehaviour
     private CameraFX         cameraFX;
     private Animator         animator;
     private Light            spotLight;
-    private PlayerMovement   playerMovement;
     private PlayerSFX        playerSFX;
     private Volume           postProcessing;
     private GameObject       cameraObj;
     private TextMeshPro      tmPro;
+    private PlayerMovement   playerMovement;
+    private PlayerStats      playerStats;
 
     
     void Awake()
@@ -58,11 +59,12 @@ public class CameraManager : MonoBehaviour
         cameraFX = FindAnyObjectByType<CameraFX>();
         animator = GetComponentInChildren<Animator>();
         spotLight = GetComponentInChildren<Light>();
-        playerMovement = FindAnyObjectByType<PlayerMovement>();
         playerSFX = FindAnyObjectByType<PlayerSFX>();
         postProcessing = GetComponentInChildren<Volume>();
         cameraObj = transform.GetChild(0).gameObject;
         tmPro = GetComponentInChildren<TextMeshPro>();
+        playerMovement = FindAnyObjectByType<PlayerMovement>();
+        playerStats = FindAnyObjectByType<PlayerStats>();
 
         tmPro.enabled = false;
     }
@@ -82,6 +84,8 @@ public class CameraManager : MonoBehaviour
             Photos.Remove(lastKey);
             Photos.Add(renderStorage, valueStorage);
             if(InGallery && ActivePhoto == Photos.Count-1) DisplayPhoto(Photos.ElementAt(Photos.Count-1).Key);
+
+            playerStats.ObtainMoney(valueStorage, true);
         }
     }
     void Update()
@@ -153,7 +157,7 @@ public class CameraManager : MonoBehaviour
         Prop[] props = FindObjectsByType<Prop>(FindObjectsSortMode.None);
         foreach(Prop prop in props)
         {
-            if(prop.Artefact && Tools.FrustumCheck(prop.colliderBounds, prop.cam) && !Tools.OcclusionCheck(prop.transform, playerMovement.transform))
+            if(prop.Artefact && Tools.FrustumCheck(prop.colliderBounds, prop.cam) && !Tools.OcclusionCheck(prop.transform, playerMovement.transform, 50))
             {
                 Money += prop.Value * prop.ValueFalloff.Evaluate((float)prop.TimesPhotographed/3.5f);
                 prop.TimesPhotographed++;

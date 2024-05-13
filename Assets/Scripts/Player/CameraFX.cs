@@ -2,18 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using PalexUtilities;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using VInspector;
 
 public class CameraFX : MonoBehaviour
 {
-    public CinemachineVirtualCamera CMvc;
-    public CinemachineBasicMultiChannelPerlin CMbmcp;
-    public CinemachineImpulseSource CMis;
-    private PlayerMovement playerMovement;
-
-    [Space(10)]
-
     public float TargetDutch;
     private float BlendDutch;
 
@@ -23,19 +19,38 @@ public class CameraFX : MonoBehaviour
     public float TargetShakeAmplitude;
     private float BlendShakeAmplitude;
     public float TargetShakeFrequency;
-    private float BlendShakeFrequency;    
+    private float BlendShakeFrequency;
+
+    [Space(10)]
+
+    public GameObject LookingTarget;
+    public GameObject LookingTargetStorage;
+
+
+    [Foldout("Cinemachine stuff")]
+    public Camera cam;
+    public CinemachineVirtualCamera CMvc;
+    public CinemachineBasicMultiChannelPerlin CMbmcp;
+    public CinemachineImpulseSource CMis;
+    public CinemachinePOV CMpov;
+    public PlayerMovement playerMovement;
+    public PlayerStats playerStats;
 
     void Awake()
     {
         //Assign Components
-        playerMovement = FindAnyObjectByType<PlayerMovement>();
+        cam = Camera.main;
+        CMvc = FindAnyObjectByType<CinemachineVirtualCamera>();
         CMbmcp = CMvc.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-        CMis = playerMovement.GetComponentInChildren<CinemachineImpulseSource>();
+        CMpov = CMvc.GetCinemachineComponent<CinemachinePOV>();
+
+        playerMovement = FindAnyObjectByType<PlayerMovement>();
+        playerStats = FindAnyObjectByType<PlayerStats>();
     }
 
     void Update()
     {
-        if(playerMovement.Dead) return;
+        if(playerStats.Dead) return;
 
         //Dutch Tilt + Field Of View
         CMvc.m_Lens.Dutch = Mathf.SmoothDamp(CMvc.m_Lens.Dutch, TargetDutch, ref BlendDutch, 0.1f);
@@ -76,6 +91,49 @@ public class CameraFX : MonoBehaviour
         {
             TargetShakeAmplitude = 0f;
             TargetShakeFrequency = 0f;
+        } 
+
+        RaycastHit hit = Tools.GetCameraForwardHit3D(5f);
+        LookingTarget = hit.collider == null ? null : hit.collider.gameObject;
+        if (LookingTarget != null) // Object
+        {
+            if (LookingTarget != LookingTargetStorage) // Unique Object
+            {
+                //DebugPlus.DrawSphere(Tools.GetCameraForwardHit3D().point, 0.25f).Color(Color.green).Duration(0.1f);
+
+                Interactable newItem = LookingTarget.GetComponentInParent<Interactable>();
+                if (newItem != null) newItem.MouseOver();
+
+                Interactable oldItem = LookingTargetStorage != null ? LookingTargetStorage.GetComponentInParent<Interactable>() : null;
+                if (oldItem != null) oldItem.MouseExit();
+
+                LookingTargetStorage = LookingTarget;
+            }
+            //else DebugPlus.DrawSphere(Tools.GetCameraForwardHit3D().point, 0.1f).Color(Color.red);
         }
+        else
+        {
+            Interactable oldItem = LookingTargetStorage != null ? LookingTargetStorage.GetComponentInParent<Interactable>() : null;
+            if (oldItem != null) oldItem.MouseExit();
+            LookingTargetStorage = null;
+        }
+    }
+
+
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        if(context.started)
+        {
+            if(LookingTarget == null) return;
+            Interactable newItem = LookingTarget.GetComponent<Interactable>();
+            if (newItem != null) newItem.InteractStart();
+        }
+    }
+
+    public void Die()
+    {
+        CMvc.enabled = false;
+        TargetShakeAmplitude = 0f;
+        TargetShakeFrequency = 0f;
     }
 }

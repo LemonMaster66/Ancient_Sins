@@ -6,30 +6,35 @@ using VInspector;
 
 public class PlayerSFX : AudioManager
 {
-    [Space(8)]
+    [Space(10)]
+
+    [Tab("Physics")]
     public float TimeBetweenSteps;
     public float stepTimer;
-
-
-    [Header("Physics")]
+    [Space(10)]
     public AudioClip[] WalkStep;
     public AudioClip[] RunStep;
     [Space(5)]
     public AudioClip[] Jump;
     public AudioClip[] Land;
 
-    [Header("Other Player")]
+
+
+    [Tab("Stats")]
     public AudioClip Damage;
     public AudioClip Death;
+    [Space(5)]
+    public AudioClip[] ObtainMoney;
 
 
-    [Header("Camera")]
+    [Tab("Camera")]
     public AudioClip Capture;
     public AudioClip ZoomInterval;
     public AudioClip ViewGallery;
 
 
     private PlayerMovement PM;
+    private PlayerStats    PS;
     private GroundCheck groundCheck;
     [HideInInspector] public Enemy enemy;
 
@@ -37,6 +42,7 @@ public class PlayerSFX : AudioManager
     void Awake()
     {
         PM = FindAnyObjectByType<PlayerMovement>();
+        PS = FindAnyObjectByType<PlayerStats>();
         groundCheck = GetComponentInChildren<GroundCheck>();
         enemy = FindAnyObjectByType<Enemy>();
     }
@@ -44,7 +50,7 @@ public class PlayerSFX : AudioManager
 
     void FixedUpdate()
     {
-        if(PM.Dead) return;
+        if(PS.Dead) return;
 
         if(PM.WalkingCheck()) stepTimer -= Time.deltaTime;
         if(stepTimer < 0)

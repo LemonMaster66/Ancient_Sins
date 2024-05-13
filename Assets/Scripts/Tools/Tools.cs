@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
-
+using System.Reflection;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.SceneManagement;
 
 namespace PalexUtilities
 {
@@ -33,7 +35,56 @@ namespace PalexUtilities
 
 
         #endregion
+        
 
+
+        #region Lists / Arrays
+            
+
+            public static T[] RemoveDuplicates<T>(T[] arr)
+            {
+                List<T> list = new List<T>();
+                foreach (T t in arr) {
+                    if (!list.Contains(t)) {
+                        list.Add(t);
+                    }
+                }
+                return list.ToArray();
+            }
+
+            public static List<T> RemoveDuplicates<T>(List<T> arr)
+            {
+                List<T> list = new List<T>();
+                foreach (T t in arr) {
+                    if (!list.Contains(t)) {
+                        list.Add(t);
+                    }
+                }
+                return list;
+            }
+
+
+            public static void ShuffleArray<T>(T[] arr, int iterations)
+            {
+                for (int i = 0; i < iterations; i++) {
+                    int rnd = UnityEngine.Random.Range(0, arr.Length);
+                    T tmp = arr[rnd];
+                    arr[rnd] = arr[0];
+                    arr[0] = tmp;
+                }
+            }
+            public static void ShuffleList<T>(List<T> list, int iterations)
+            {
+                for (int i = 0; i < iterations; i++) {
+                    int rnd = UnityEngine.Random.Range(0, list.Count);
+                    T tmp = list[rnd];
+                    list[rnd] = list[0];
+                    list[0] = tmp;
+                }
+            }
+
+
+        #endregion
 
 
         #region Textures
@@ -68,6 +119,11 @@ namespace PalexUtilities
 
             //public static void SavePNG(this Texture2D texture2d, string path) => File.WriteAllBytes(path, texture2d.EncodeToPNG());
 
+            public static Color GetRandomColor()
+            {
+                return new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), 1f);
+            }
+
 
         #endregion
 
@@ -94,6 +150,56 @@ namespace PalexUtilities
                         Object.DestroyImmediate(transform.GetChild(0).gameObject);
 
                 return transform;
+            }
+
+
+            #region Mouse Positions 2D
+                public static Vector3 GetMouseWorldPosition2D()
+                {
+                    Vector3 vec = GetMouseWorldPositionWithZ(Input.mousePosition, Camera.main);
+                    vec.z = 0f;
+                    return vec;
+                }
+
+                public static Vector3 GetMouseWorldPositionWithZ(Vector3 screenPosition, Camera worldCamera)
+                {
+                    Vector3 worldPosition = worldCamera.ScreenToWorldPoint(screenPosition);
+                    return worldPosition;
+                }
+
+                public static Vector3 GetDirToMouse(Vector3 fromPosition)
+                {
+                    Vector3 mouseWorldPosition = GetMouseWorldPosition2D();
+                    return (mouseWorldPosition - fromPosition).normalized;
+                }
+            #endregion
+
+
+            public static Vector3 GetMouseWorldPosition3D()
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if(Physics.Raycast(ray, out RaycastHit hit, 100000, ~Physics.IgnoreRaycastLayer))
+                    return hit.point;
+                return Vector3.zero + ray.direction * 1000;
+            }
+
+            public static RaycastHit GetMouseRaycastHit3D()
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if(Physics.Raycast(ray, out hit, 100000, ~Physics.IgnoreRaycastLayer))
+                    return hit;
+                return default;
+            }
+
+            public static RaycastHit GetCameraForwardHit3D(float MaxDistance = 10000, Camera camera = null)
+            {
+                if(camera == null) camera = Camera.main;
+                
+                RaycastHit hit;
+                if(Physics.Raycast(camera.transform.position, camera.transform.forward*10000, out hit, MaxDistance, ~Physics.IgnoreRaycastLayer))
+                    return hit;
+                return default;
             }
 
 
@@ -135,27 +241,22 @@ namespace PalexUtilities
                 return GeometryUtility.TestPlanesAABB(frustumPlanes, bounds);
             }
             
-            public static bool OcclusionCheck(this Transform transform, Transform target) // True if its Occluded
+            public static bool OcclusionCheck(this Transform transform, Transform target, float MaxDistance = 100000, LayerMask layerMask = default) // True if its Occluded
             {
-                if(Physics.Raycast(transform.position, target.position-transform.position, out RaycastHit hit, 100000, Physics.AllLayers))
+                if(layerMask == default) layerMask = ~Physics.IgnoreRaycastLayer;
+                if(Physics.Raycast(transform.position, target.position-transform.position, out RaycastHit hit, MaxDistance, layerMask))
                 {
                     return hit.transform.tag != "Player";
                 }
                 return true;
             }
-            public static bool OcclusionCheck(this Transform transform, Transform target, LayerMask layerMask = default) // True if its Occluded
+            public static bool OcclusionCheck(Transform[] transforms, Transform target = null, float MaxDistance = 100000, LayerMask layerMask = default) // True if all Points are Occluded
             {
-                if(Physics.Raycast(transform.position, target.position-transform.position, out RaycastHit hit, 100000, layerMask))
-                {
-                    return hit.transform.tag != "Player";
-                }
-                return true;
-            }
-            public static bool OcclusionCheck(Transform[] transforms, Transform target, LayerMask layerMask) // True if all Points are Occluded
-            {
+                if(layerMask == default) layerMask = ~Physics.IgnoreRaycastLayer;
                 foreach(Transform Point in transforms)
                 {
-                    if(Physics.Raycast(Point.position, target.position-Point.position, out RaycastHit hit, 100000, layerMask))
+                    //Debug.DrawRay(Point.position, target.position-Point.position);
+                    if(Physics.Raycast(Point.position, target.position-Point.position, out RaycastHit hit, MaxDistance, layerMask))
                     {
                         if(hit.transform.tag == "Player") return false;
                     }
@@ -163,12 +264,17 @@ namespace PalexUtilities
                 return true;
             }
 
+            public static void ChangeScene(string sceneName)
+            {
+                SceneManager.LoadScene(sceneName);
+            }
+
             
         #endregion
 
 
         
-        #region Bonus Functions
+        #region Unity Editor
             
 
             public static void DrawThickRay(Vector3 start, Vector3 dir, Color color, float duration, float Thickness, int Iterations = 200)
@@ -180,6 +286,16 @@ namespace PalexUtilities
                     start.z += UnityEngine.Random.Range(Thickness, -Thickness);
                     Debug.DrawRay(start, dir, color, duration);
                 }
+            }
+
+            public static void ClearLogConsole()
+            {
+#if UNITY_EDITOR
+                Assembly assembly = Assembly.GetAssembly(typeof(UnityEditor.SceneView));
+                System.Type logEntries = System.Type.GetType("UnityEditor.LogEntries, UnityEditor.dll");
+                MethodInfo clearConsoleMethod = logEntries.GetMethod("Clear");
+                clearConsoleMethod.Invoke(new object(), null);
+#endif
             }
 
 

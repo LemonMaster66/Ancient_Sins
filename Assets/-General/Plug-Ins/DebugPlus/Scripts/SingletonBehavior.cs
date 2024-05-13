@@ -15,7 +15,7 @@ namespace DebugPlusNS {
 
                 lock (o) {
                     if (i == null) {
-                        var candidates = FindObjectsOfType(typeof(T));
+                        var candidates = FindObjectsByType(typeof(T), FindObjectsSortMode.None);
                         if (candidates.Length > 1) {
                             Debug.LogError("There are many instances of the singleton behavior " + typeof(T) + " in the scene, which is illegal.");
                             return i;
