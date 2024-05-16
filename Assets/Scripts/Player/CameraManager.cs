@@ -26,6 +26,7 @@ public class CameraManager : MonoBehaviour
 
 
     [Header("States")]
+    public bool HasCamera        = false;
     public bool Focusing         = false;
     public bool Rendering        = false;
     public bool InGallery        = false;
@@ -100,9 +101,12 @@ public class CameraManager : MonoBehaviour
     //Camera Functions
     public void OnCapture(InputAction.CallbackContext context)
     {
+        if(!HasCamera || playerStats.Dead) return;
+
         if(context.started)
         {
             if(!Rendering) Capture();
+            else playerSFX.PlaySound(playerSFX.RenderingCapture, 0.15f, 1f, 0.1f);
         }
     }
     [Button]
@@ -112,19 +116,19 @@ public class CameraManager : MonoBehaviour
         spotLight.intensity = 175;
         captureCooldownTime = CaptureCooldown;
 
-        #region Post Processing
-            postProcessing.profile.TryGet(out ColorAdjustments colorAdjustments);
-            colorAdjustments.postExposure.value = 1.5f;
-            colorAdjustments.contrast.value = -10;
+        // #region Post Processing
+        //     //postProcessing.profile.TryGet(out ColorAdjustments colorAdjustments);
+        //     //colorAdjustments.postExposure.value = 1.5f;
+        //     //colorAdjustments.contrast.value = -10;
 
-            cam.Render();
+        //     cam.Render();
 
-            colorAdjustments.postExposure.value = 0.35f;
-            colorAdjustments.contrast.value = -5;
-        #endregion
+        //     //colorAdjustments.postExposure.value = 0.35f;
+        //     //colorAdjustments.contrast.value = -5;
+        // #endregion
         #region Read Texture
             RenderTexture.active = renderTexture;
-            Texture2D texture2D = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
+            Texture2D texture2D = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false, true);
             texture2D.ReadPixels(new Rect(0,0, renderTexture.width, renderTexture.height), 0, 0);
             texture2D.Apply();
             RenderTexture.active = null;
@@ -179,6 +183,8 @@ public class CameraManager : MonoBehaviour
 
     public void OnFocus(InputAction.CallbackContext context)
     {
+        if(!HasCamera || playerStats.Dead) return;
+
         if(context.started) 
         {
             Focusing = true;

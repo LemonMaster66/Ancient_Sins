@@ -79,10 +79,10 @@ public class Enemy : MonoBehaviour
 
         if(!IgnorePlayer && AttackCooldown == 0)
         {
-            if(Tools.FrustumCheck(boundsCollider, cam) && !Tools.OcclusionCheck(Points, playerMovement.Camera, OcclusionLayerMask)) Freeze(true);
+            if(Tools.FrustumCheck(boundsCollider, cam) && !Tools.OcclusionCheck(Points, playerMovement.Camera, 1000000, OcclusionLayerMask)) Freeze(true);
             else                                    Freeze(false);
 
-            if(!Tools.OcclusionCheck(Points, playerMovement.Camera, OcclusionLayerMask))
+            if(!Tools.OcclusionCheck(Points, playerMovement.Camera, 1000000, OcclusionLayerMask))
             {
                 if(!Watched) SetState("Chasing");
                 Target.position = playerMovement.transform.position;
@@ -109,7 +109,7 @@ public class Enemy : MonoBehaviour
         }
         else if(!state && Watched) //Unfreeze
         {
-            SetState(Tools.OcclusionCheck(Points, playerMovement.Camera, OcclusionLayerMask) ? "Searching" : "Chasing");
+            SetState(Tools.OcclusionCheck(Points, playerMovement.Camera, 1000000, OcclusionLayerMask) ? "Searching" : "Chasing");
             Watched = false;
             if(AttackCooldown > 0) AttackCooldown = 0.25f;
         }
@@ -144,15 +144,6 @@ public class Enemy : MonoBehaviour
         // Failed all Checks
         return RandomNavmeshLocation(Range+6, MinDistance-5, MaxDirectionDotDifference + 0.25f);
     }
-    public Vector3 RandomNavmeshLocationOld(float Range = 20)
-    {
-        Vector3 randomDirection = UnityEngine.Random.onUnitSphere * Range;
-        randomDirection += transform.position;
-        NavMeshHit hit;
-        Vector3 finalPosition = Vector3.zero;
-        if (NavMesh.SamplePosition(randomDirection, out hit, Range, 1)) finalPosition = hit.position;
-        return finalPosition;
-    }
 
 
     public void MoveUpdate()
@@ -170,7 +161,7 @@ public class Enemy : MonoBehaviour
         }
         if(State == "Chasing")
         {
-            if(!Tools.OcclusionCheck(Points, playerMovement.Camera, OcclusionLayerMask)) Target.position = playerMovement.transform.position;
+            if(!Tools.OcclusionCheck(Points, playerMovement.Camera, 1000000, OcclusionLayerMask)) Target.position = playerMovement.transform.position;
             else
             {
                 SetState("Searching");

@@ -29,6 +29,7 @@ public class PlayerSFX : AudioManager
 
     [Tab("Camera")]
     public AudioClip Capture;
+    public AudioClip RenderingCapture;
     public AudioClip ZoomInterval;
     public AudioClip ViewGallery;
 

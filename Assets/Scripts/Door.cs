@@ -1,52 +1,72 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using VInspector;
 
-public class Door : MonoBehaviour
+public class Door : Interactable
 {
+    [Tab("Main")]
+    [Header("States")]
     public bool Open;
+    public bool Locked;
 
-    
-    public float Speed;
-    public float Distance = 5;
+    [Space(8)]
 
-    private Vector3 TargetPosition;
-    private Vector3 OriginPosition;
-    public  Vector3 OpenPosition;
-
-    private PlayerMovement playerMovement;
+    [Header("Other")]
+    public GameObject collectParticle;
+    public GameObject MoneyText;
 
 
-    private void Start()
+    [Tab("Audio")]
+    public AudioClip[] Open_Small;
+    public AudioClip[] Open_Medium;
+    public AudioClip[] Open_Large;
+
+
+
+    [Tab("Settings")]
+    public Outline outline;
+    public float   TargetOutline = 0;
+    public float   BlendOutline;
+
+    public Animator animator;
+
+    public PlayerMovement playerMovement;
+    public PlayerStats playerStats;
+    public PlayerSFX playerSFX;
+    public Enemy enemy;
+
+
+    void Awake()
     {
-        OriginPosition = transform.position;
-        TargetPosition = OriginPosition;
+        outline = GetComponent<Outline>();
         playerMovement = FindAnyObjectByType<PlayerMovement>();
+        playerStats = FindAnyObjectByType<PlayerStats>();
+        playerSFX = FindAnyObjectByType<PlayerSFX>();
+
+        enemy = FindAnyObjectByType<Enemy>();
+
+        outline = gameObject.AddComponent<Outline>();
+        outline.OutlineMode = Outline.Mode.OutlineVisible;
+        outline.OutlineWidth = 0;
+    }
+    
+    
+    public override void MouseOver()
+    {
+        // Runs when the mouse Hovers Over this
     }
 
-    private void Update()
+    public override void MouseExit()
     {
-        transform.position = Vector3.Slerp(transform.position, TargetPosition, Speed);
-        if(Vector3.Distance(OriginPosition, playerMovement.transform.position) < Distance)
-        {
-            if(!Open) OpenDoor();
-        }
-        else
-        {
-            if(Open) CloseDoor();
-        }
+        // Runs when the mouse Exits this
     }
 
-
-    private void OpenDoor()
+    public override void InteractStart()
     {
-        Open = true;
-        TargetPosition += OpenPosition;
+        // Runs when E is Pressed on the Object
     }
 
-    private void CloseDoor()
+    public override void InteractEnd()
     {
-        Open = false;
-        TargetPosition = OriginPosition;
+        // Runs when E is Released on the Object
     }
 }

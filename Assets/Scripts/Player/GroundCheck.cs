@@ -39,7 +39,9 @@ public class GroundCheck : MonoBehaviour
 
             cameraFX.CMis.GenerateImpulseWithForce(Math.Clamp(playerMovement.SmoothVelocity.y, -22, 0) * (cameraFX.CMis.enabled ? 1 : 0));
             playerSFX.PlayRandomSound(playerSFX.Land, playerMovement.SmoothVelocity.y*-1/50, 1f, 0.15f, false);
-            if(playerSFX.enemy != null) playerSFX.enemy.HearSound(transform.position, (50*Math.Clamp(playerMovement.SmoothVelocity.y*-1, 0,1)), 10);
+
+            float HearRange = Math.Clamp(playerMovement.SmoothVelocity.y/15, -1, 0)*-60;
+            if(playerSFX.enemy != null) playerSFX.enemy.HearSound(transform.position, HearRange, 10);
         }
         
         GroundObject = other.gameObject;

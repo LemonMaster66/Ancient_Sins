@@ -241,7 +241,7 @@ namespace PalexUtilities
                 return GeometryUtility.TestPlanesAABB(frustumPlanes, bounds);
             }
             
-            public static bool OcclusionCheck(this Transform transform, Transform target, float MaxDistance = 100000, LayerMask layerMask = default) // True if its Occluded
+            public static bool OcclusionCheck(this Transform transform, Transform target, float MaxDistance = 1000000, LayerMask layerMask = default) // True if its Occluded
             {
                 if(layerMask == default) layerMask = ~Physics.IgnoreRaycastLayer;
                 if(Physics.Raycast(transform.position, target.position-transform.position, out RaycastHit hit, MaxDistance, layerMask))
@@ -250,12 +250,11 @@ namespace PalexUtilities
                 }
                 return true;
             }
-            public static bool OcclusionCheck(Transform[] transforms, Transform target = null, float MaxDistance = 100000, LayerMask layerMask = default) // True if all Points are Occluded
+            public static bool OcclusionCheck(Transform[] transforms, Transform target = null, float MaxDistance = 1000000, LayerMask layerMask = default) // True if all Points are Occluded
             {
                 if(layerMask == default) layerMask = ~Physics.IgnoreRaycastLayer;
                 foreach(Transform Point in transforms)
                 {
-                    //Debug.DrawRay(Point.position, target.position-Point.position);
                     if(Physics.Raycast(Point.position, target.position-Point.position, out RaycastHit hit, MaxDistance, layerMask))
                     {
                         if(hit.transform.tag == "Player") return false;
