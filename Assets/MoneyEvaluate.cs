@@ -1,91 +1,141 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using VInspector;
 
 public class MoneyEvaluate : MonoBehaviour
 {
+    [Tab("Main")]
     public float speed = 10;
     public float totalMoney = 0;
     public float timer = 0;
 
-    [Space(5)]
+    [Space(8)]
 
     public int ActivePhoto = 0;
 
-    [Space(5)]
+    [Space(8)]
 
     public bool Active;
     public bool EvaluatedValue;
 
-    [Space(8)]
 
+    [Tab("Audio")]
+    public AudioClip[] PhotoAppear;
+    public AudioClip   Buildup;
+    public AudioClip   Release;
+
+
+    [Tab("Settings")]
     public GameObject textPopup;
     public GameObject photoPrefab;
     public GameObject currentPhotoObj;
     public GameObject currentTextObj;
 
-    //public Transform currentTextObj;
-
-    [Space(5)]
+    [Space(8)]
 
     public CameraManager  cameraManager;
     public PlayerStats    playerStats;
     public PlayerMovement playerMovement;
+    public AudioManager   audioManager;
     
 
 
     void Awake()
     {
-        cameraManager = FindAnyObjectByType<CameraManager>();
-        playerStats = FindAnyObjectByType<PlayerStats>();
+        cameraManager  = FindAnyObjectByType<CameraManager>();
+        playerStats    = FindAnyObjectByType<PlayerStats>();
         playerMovement = FindAnyObjectByType<PlayerMovement>();
+        audioManager   = GetComponent<AudioManager>();
     }
 
     void Update()
     {
         if(!Active) return;
+        
         timer += Time.deltaTime * speed;
 
         if(timer > 2) //Done
         {
             if(ActivePhoto+1 == cameraManager.Photos.Count) //Finish
             {
-                Debug.Log("Done");
-                Active = false;
-                //Destroy(currentPhotoObj);
+                EndEvaluation();
                 return;
             }
+            if(currentPhotoObj != null) currentPhotoObj.transform.DOComplete(); Destroy(currentPhotoObj);
+            if(currentTextObj  != null) currentTextObj.transform.DOComplete();  Destroy(currentTextObj);
 
-            //Destroy(currentPhotoObj);
-            //Destroy(currentPhotoObj);
             ActivePhoto++;
             Evaluate();
         }
         else if(timer > 1 && !EvaluatedValue) //Money Popup
         {
             EvaluatedValue = true;
+            float currentValue = cameraManager.Photos.ElementAt(ActivePhoto).Value;
+            totalMoney += cameraManager.Photos.ElementAt(ActivePhoto).Value;
+
+            if(currentValue == 0) return;
+
             currentTextObj = Instantiate(textPopup, transform.position, Quaternion.identity);
-            playerStats.Money += cameraManager.Photos.ElementAt(ActivePhoto).Value;
+            currentTextObj.transform.localScale  = new Vector3(1.5f, 1.5f, 1.5f);
+
+            currentTextObj.GetComponent<TextPopup>().TextUpdate(currentValue);
+            playerStats.ObtainMoney(currentValue);
         }
     }
 
-    [Button]
+
     public void Evaluate()
+    {
+        if(currentPhotoObj != null) currentPhotoObj.transform.DOComplete(); Destroy(currentPhotoObj);
+        if(currentTextObj  != null) currentTextObj. transform.DOComplete(); Destroy(currentTextObj);
+
+        EvaluatedValue = false;
+
+        timer = 0;
+        speed += 0.65f;
+        currentPhotoObj = Instantiate(photoPrefab, transform.position, Quaternion.identity);
+
+        currentPhotoObj.transform.localScale = new Vector3(0.5f,0.5f,0.5f);
+
+        Renderer Screen = currentPhotoObj.GetComponentInChildren<Renderer>();
+        Screen.material.mainTexture = cameraManager.Photos.ElementAt(ActivePhoto).Key;
+
+        audioManager.PlayRandomSound(PhotoAppear, 1, 1, 0.2f);
+    }
+
+
+    [Button]
+    public void BeginEvaluation()
     {
         Active = true;
         EvaluatedValue = false;
-        timer = 0;
-        speed += 0.25f;
-        currentPhotoObj = Instantiate(photoPrefab, transform.position, Quaternion.identity);
 
-        currentPhotoObj.transform.position += new Vector3(90, 0, 0);
-        currentPhotoObj.transform.eulerAngles += new Vector3(90, 0, 0);
-        currentPhotoObj.transform.localScale = new Vector3(0.5f,0.5f,0.5f);
+        Evaluate();
 
-        Renderer Screen = currentPhotoObj.GetComponent<Renderer>();
-        Screen.material.mainTexture = cameraManager.Photos.ElementAt(ActivePhoto).Key;
+        audioManager.PlaySound(Buildup);
+    }
+
+    public void EndEvaluation()
+    {
+        Active = false;
+
+        if(currentPhotoObj != null) currentPhotoObj.transform.DOComplete(); Destroy(currentPhotoObj);
+        if(currentTextObj  != null) currentTextObj. transform.DOComplete(); Destroy(currentTextObj);
+
+        currentTextObj = Instantiate(textPopup, transform.position, Quaternion.identity);
+        currentTextObj.transform.localScale  = new Vector3(2, 2, 2);
+        
+        float currentValue = cameraManager.Photos.ElementAt(ActivePhoto).Value;
+        TextPopup text = currentTextObj.GetComponent<TextPopup>();
+        text.TextUpdate(totalMoney);
+        text.DecayAfter = 2f;
+
+        audioManager.StopSound(Buildup);
+        audioManager.PlaySound(Release);
     }
 
     [Button]

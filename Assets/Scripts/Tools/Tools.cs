@@ -240,6 +240,17 @@ namespace PalexUtilities
 
                 return GeometryUtility.TestPlanesAABB(frustumPlanes, bounds);
             }
+            public static bool FrustumCheck(Collider[] colliders, Camera cam)   // True if one of them is in the Cameras Bounds
+            {
+                foreach(Collider collider in colliders)
+                {
+                    Bounds bounds = collider.bounds;
+                    Plane[] frustumPlanes = GeometryUtility.CalculateFrustumPlanes(cam);
+
+                    if(GeometryUtility.TestPlanesAABB(frustumPlanes, bounds)) return true;
+                }
+                return false;
+            }
             
             public static bool OcclusionCheck(this Transform transform, Transform target, float MaxDistance = 1000000, LayerMask layerMask = default) // True if its Occluded
             {
@@ -256,6 +267,18 @@ namespace PalexUtilities
                 foreach(Transform Point in transforms)
                 {
                     if(Physics.Raycast(Point.position, target.position-Point.position, out RaycastHit hit, MaxDistance, layerMask))
+                    {
+                        if(hit.transform.tag == "Player") return false;
+                    }
+                }
+                return true;
+            }
+            public static bool OcclusionCheck(Collider[] colliders, Transform target = null, float MaxDistance = 1000000, LayerMask layerMask = default) // True if all Points are Occluded
+            {
+                if(layerMask == default) layerMask = ~Physics.IgnoreRaycastLayer;
+                foreach(Collider Point in colliders)
+                {
+                    if(Physics.Raycast(Point.transform.position, target.position-Point.transform.position, out RaycastHit hit, MaxDistance, layerMask))
                     {
                         if(hit.transform.tag == "Player") return false;
                     }

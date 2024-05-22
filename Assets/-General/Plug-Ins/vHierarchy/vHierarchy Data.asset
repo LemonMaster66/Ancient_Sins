@@ -49,6 +49,8 @@ MonoBehaviour:
         - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-762708533314249589-0
         - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-7951114689790901132-0
         - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-7951114687909308563-0
+        - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-289495236-0
+        - globalObjectIdString: GlobalObjectId_V1-2-99c9720ab356a0642a771bea13969a05-475034847740935348-0
         values:
         - colorIndex: 9
           iconNameOrGuid: Camera Icon
@@ -112,3 +114,7 @@ MonoBehaviour:
           iconNameOrGuid: 
         - colorIndex: 1
           iconNameOrGuid: 
+        - colorIndex: 6
+          iconNameOrGuid: LightProbes Icon
+        - colorIndex: 1
+          iconNameOrGuid: Favorite

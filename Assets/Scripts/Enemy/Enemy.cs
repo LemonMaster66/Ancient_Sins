@@ -9,15 +9,13 @@ using PalexUtilities;
 
 public class Enemy : MonoBehaviour
 {
+    [Tab("Main")]
     public Transform   Target;
     public Transform   LastTarget;
-    public Transform[] Points;
+    public Collider[]  Points;
     public LayerMask   OcclusionLayerMask;
 
     [Space(10)]
-
-    //public SerializedDictionary<Transform, float> CheckedPoints = new SerializedDictionary<Transform, float>();
-
 
     [Header("Properties")]
     public float CurrentNoisePriority;
@@ -30,23 +28,26 @@ public class Enemy : MonoBehaviour
     public string State;
     
     public bool Active = true;
+    public bool WeepingAngel = true;
     public bool Watched;
     public bool IgnorePlayer;
     
     [Space(10)]
 
-    //[Foldout("Debug")]
-    
+    [Tab("Audio")]
+    public AudioSource FootSteps;
 
-    #region References
-        private PlayerMovement playerMovement;
-        private PlayerStats    playerStats;
-        private Camera         cam;
-        private NavMeshAgent   agent;
-        private Plane[]        frustumPlanes;
-        private Collider       boundsCollider;
-        private AudioSource    audioSource;
-    #endregion
+    [Tab("Settings")]
+    public PlayerMovement playerMovement;
+    public PlayerStats    playerStats;
+    public Camera         cam;
+    public NavMeshAgent   agent;
+    public Animator       animator;
+
+    [Space(10)]
+
+    public float animationSpeedTarget;
+    public float animationSpeedBlend;
 
     
 
@@ -57,8 +58,8 @@ public class Enemy : MonoBehaviour
         playerStats    = FindAnyObjectByType<PlayerStats>();
         cam = Camera.main;
         agent = GetComponentInParent<NavMeshAgent>();
-        boundsCollider = transform.GetChild(0).GetComponent<Collider>();
-        audioSource = GetComponentInChildren<AudioSource>();
+        animator = GetComponentInChildren<Animator>();
+        FootSteps = GetComponentInChildren<AudioSource>();
         FindAnyObjectByType<PlayerSFX>().enemy = this;
     }
 
@@ -67,7 +68,16 @@ public class Enemy : MonoBehaviour
         if(SearchDuration > 0) SearchDuration = Math.Clamp(SearchDuration - Time.deltaTime, 0, math.INFINITY);
         if(AttackCooldown > 0) AttackCooldown = Math.Clamp(AttackCooldown - Time.deltaTime, 0, math.INFINITY);
 
-        audioSource.volume = agent.velocity.magnitude/10;
+        FootSteps.volume = agent.velocity.magnitude/10;
+        if(State != "Chasing") animator.SetBool("Moving", agent.velocity.magnitude > 1);
+        animator.SetFloat("Blend", State == "Chasing" ? 1 : 0, 0.025f, Time.deltaTime);
+
+        if(playerStats.Dead) animator.SetBool("Moving", false);
+
+        Debug.Log(agent.velocity.magnitude);
+
+        animationSpeedTarget = Watched ? 0 : 1;
+        animator.speed = Mathf.SmoothDamp(animator.speed, animationSpeedTarget, ref animationSpeedBlend, 0.075f);
     }
 
 
@@ -79,8 +89,11 @@ public class Enemy : MonoBehaviour
 
         if(!IgnorePlayer && AttackCooldown == 0)
         {
-            if(Tools.FrustumCheck(boundsCollider, cam) && !Tools.OcclusionCheck(Points, playerMovement.Camera, 1000000, OcclusionLayerMask)) Freeze(true);
-            else                                    Freeze(false);
+            if(WeepingAngel)
+            {
+                if(Tools.FrustumCheck(Points, cam) && !Tools.OcclusionCheck(Points, playerMovement.Camera, 1000000, OcclusionLayerMask)) Freeze(true);
+                else Freeze(false);
+            }
 
             if(!Tools.OcclusionCheck(Points, playerMovement.Camera, 1000000, OcclusionLayerMask))
             {
@@ -95,6 +108,7 @@ public class Enemy : MonoBehaviour
             MoveUpdate();
             if(IgnorePlayer || Watched || State != "Chasing") return;
             if(AttackCooldown == 0 && Vector3.Distance(transform.position, playerMovement.transform.position) < 5) Attack(90);
+            animator.CrossFade("Judas_Attack", 0.1f, 0, 0.01f);
         }
     }
 

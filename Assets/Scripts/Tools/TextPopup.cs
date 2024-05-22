@@ -17,7 +17,7 @@ public class TextPopup : Popup
     }
 
 
-    public void DamageUpdate(float UpdatedMoney)
+    public void TextUpdate(float UpdatedMoney)
     {
         Money = UpdatedMoney;
         Money = (float)Math.Round(Money, 0);

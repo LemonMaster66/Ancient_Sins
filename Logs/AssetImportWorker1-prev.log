@@ -15,7 +15,7 @@ C:/Users/Owner/Desktop/Unity/Games/College/Ancient Sins/Ancient_Sins
 -logFile
 Logs/AssetImportWorker1.log
 -srvPort
-51913
+50108
 -job-worker-count
 5
 -background-job-worker-count
@@ -58,12 +58,12 @@ C:/Users/Owner/Desktop/Unity/Games/College/Ancient Sins/Ancient_Sins
     "memorysetup-temp-allocator-size-gi-baking-worker=262144"
     "memorysetup-temp-allocator-size-gi-baking-worker=262144"
     "memorysetup-temp-allocator-size-gfx=262144"
-Player connection [11588] Host "[IP] 192.168.1.184 [Port] 0 [Flags] 2 [Guid] 2993107175 [EditorId] 2993107175 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-MENT8AN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined multi-casting on [225.0.0.222:54997]...
-Player connection [11588] Host "[IP] 192.168.1.184 [Port] 0 [Flags] 2 [Guid] 2993107175 [EditorId] 2993107175 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-MENT8AN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined alternative multi-casting on [225.0.0.222:34997]...
+Player connection [27748] Host "[IP] 192.168.1.184 [Port] 0 [Flags] 2 [Guid] 3752819117 [EditorId] 3752819117 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-MENT8AN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined multi-casting on [225.0.0.222:54997]...
+Player connection [27748] Host "[IP] 192.168.1.184 [Port] 0 [Flags] 2 [Guid] 3752819117 [EditorId] 3752819117 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-MENT8AN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" joined alternative multi-casting on [225.0.0.222:34997]...
 JobSystem: Creating JobQueue using job-worker-count value 5
 [Physics::Module] Initialized MultithreadedJobDispatcher with 5 workers.
 Library Redirect Path: Library/
-Refreshing native plugins compatible for Editor in 3.05 ms, found 6 plugins.
+Refreshing native plugins compatible for Editor in 124.91 ms, found 6 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 2023.2.8f1 (a3bb09f8c8c4)
 [Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2023.2.8f1/Editor/Data/Resources/UnitySubsystems
@@ -79,7 +79,7 @@ Initialize mono
 Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2023.2.8f1/Editor/Data/Managed'
 Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2023.2.8f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
 Mono config path = 'C:/Program Files/Unity/Hub/Editor/2023.2.8f1/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56144
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56604
 Begin MonoManager ReloadAssembly
 C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
 C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
@@ -94,42 +94,42 @@ C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
 Registering precompiled unity dll's ...
 Register platform support module: C:/Program Files/Unity/Hub/Editor/2023.2.8f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
 Register platform support module: C:/Program Files/Unity/Hub/Editor/2023.2.8f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.004964 seconds.
-- Loaded All Assemblies, in  0.400 seconds
+Registered in 0.005105 seconds.
+- Loaded All Assemblies, in  1.105 seconds
 Native extension for WindowsStandalone target not found
 Native extension for WebGL target not found
 Mono: successfully reloaded assembly
 C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
 C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
-- Finished resetting the current domain, in  0.283 seconds
-Domain Reload Profiling: 680ms
-	BeginReloadAssembly (136ms)
+- Finished resetting the current domain, in  0.257 seconds
+Domain Reload Profiling: 1359ms
+	BeginReloadAssembly (238ms)
 		ExecutionOrderSort (0ms)
 		DisableScriptedObjects (0ms)
 		BackupInstance (0ms)
 		ReleaseScriptingObjects (0ms)
 		CreateAndSetChildDomain (1ms)
-	RebuildCommonClasses (46ms)
-	RebuildNativeTypeToScriptingClass (18ms)
+	RebuildCommonClasses (220ms)
+	RebuildNativeTypeToScriptingClass (10ms)
 	initialDomainReloadingComplete (54ms)
-	LoadAllAssembliesAndSetupDomain (144ms)
-		LoadAssemblies (131ms)
+	LoadAllAssembliesAndSetupDomain (580ms)
+		LoadAssemblies (235ms)
 		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (142ms)
-			TypeCache.Refresh (140ms)
-				TypeCache.ScanAssembly (129ms)
+		AnalyzeDomain (578ms)
+			TypeCache.Refresh (576ms)
+				TypeCache.ScanAssembly (398ms)
 			BuildScriptInfoCaches (0ms)
 			ResolveRequiredComponents (0ms)
-	FinalizeReload (283ms)
+	FinalizeReload (258ms)
 		ReleaseScriptCaches (0ms)
 		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (226ms)
+		SetupLoadedEditorAssemblies (206ms)
 			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (9ms)
+			InitializePlatformSupportModulesInManaged (8ms)
 			SetLoadedEditorAssemblies (3ms)
 			BeforeProcessingInitializeOnLoad (6ms)
-			ProcessInitializeOnLoadAttributes (164ms)
-			ProcessInitializeOnLoadMethodAttributes (43ms)
+			ProcessInitializeOnLoadAttributes (145ms)
+			ProcessInitializeOnLoadMethodAttributes (44ms)
 			AfterProcessingInitializeOnLoad (0ms)
 			EditorAssembliesLoaded (0ms)
 		ExecutionOrderSort2 (0ms)
@@ -152,57 +152,178 @@ C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
 C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
 Symbol file LoadedFromMemory doesn't match image C:\Users\Owner\Desktop\Unity\Games\College\Ancient Sins\Ancient_Sins\Library\PackageCache\com.unity.visualscripting@1.8.0\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
 Symbol file LoadedFromMemory doesn't match image C:\Users\Owner\Desktop\Unity\Games\College\Ancient Sins\Ancient_Sins\Library\PackageCache\com.unity.visualscripting@1.8.0\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
-- Loaded All Assemblies, in  0.977 seconds
-Refreshing native plugins compatible for Editor in 2.52 ms, found 6 plugins.
+- Loaded All Assemblies, in  3.294 seconds
+Refreshing native plugins compatible for Editor in 1.59 ms, found 6 plugins.
 Native extension for WindowsStandalone target not found
 Native extension for WebGL target not found
 Mono: successfully reloaded assembly
-- Finished resetting the current domain, in  0.844 seconds
-Domain Reload Profiling: 1813ms
-	BeginReloadAssembly (308ms)
+- Finished resetting the current domain, in  1.037 seconds
+Domain Reload Profiling: 4323ms
+	BeginReloadAssembly (333ms)
 		ExecutionOrderSort (0ms)
 		DisableScriptedObjects (5ms)
 		BackupInstance (0ms)
 		ReleaseScriptingObjects (0ms)
-		CreateAndSetChildDomain (30ms)
-	RebuildCommonClasses (35ms)
+		CreateAndSetChildDomain (29ms)
+	RebuildCommonClasses (34ms)
 	RebuildNativeTypeToScriptingClass (11ms)
-	initialDomainReloadingComplete (66ms)
-	LoadAllAssembliesAndSetupDomain (549ms)
-		LoadAssemblies (398ms)
+	initialDomainReloadingComplete (59ms)
+	LoadAllAssembliesAndSetupDomain (2850ms)
+		LoadAssemblies (2557ms)
 		RebuildTransferFunctionScriptingTraits (0ms)
-		AnalyzeDomain (247ms)
-			TypeCache.Refresh (188ms)
-				TypeCache.ScanAssembly (171ms)
-			BuildScriptInfoCaches (40ms)
-			ResolveRequiredComponents (15ms)
-	FinalizeReload (844ms)
+		AnalyzeDomain (392ms)
+			TypeCache.Refresh (346ms)
+				TypeCache.ScanAssembly (298ms)
+			BuildScriptInfoCaches (30ms)
+			ResolveRequiredComponents (12ms)
+	FinalizeReload (1037ms)
 		ReleaseScriptCaches (0ms)
 		RebuildScriptCaches (0ms)
-		SetupLoadedEditorAssemblies (670ms)
+		SetupLoadedEditorAssemblies (643ms)
 			LogAssemblyErrors (0ms)
-			InitializePlatformSupportModulesInManaged (2ms)
-			SetLoadedEditorAssemblies (3ms)
-			BeforeProcessingInitializeOnLoad (82ms)
-			ProcessInitializeOnLoadAttributes (489ms)
-			ProcessInitializeOnLoadMethodAttributes (86ms)
+			InitializePlatformSupportModulesInManaged (3ms)
+			SetLoadedEditorAssemblies (6ms)
+			BeforeProcessingInitializeOnLoad (75ms)
+			ProcessInitializeOnLoadAttributes (455ms)
+			ProcessInitializeOnLoadMethodAttributes (97ms)
 			AfterProcessingInitializeOnLoad (7ms)
 			EditorAssembliesLoaded (0ms)
 		ExecutionOrderSort2 (0ms)
 		AwakeInstancesAfterBackupRestoration (5ms)
 Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
-Refreshing native plugins compatible for Editor in 2.12 ms, found 6 plugins.
+Refreshing native plugins compatible for Editor in 2.58 ms, found 6 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Unloading 215 Unused Serialized files (Serialized files now loaded: 0)
-Unloading 6502 unused Assets / (5.7 MB). Loaded Objects now: 7278.
-Memory consumption went from 199.1 MB to 193.4 MB.
-Total: 8.054400 ms (FindLiveObjects: 0.686100 ms CreateObjectMapping: 0.368500 ms MarkObjects: 4.316300 ms  DeleteObjects: 2.682700 ms)
+Unloading 6504 unused Assets / (5.7 MB). Loaded Objects now: 7280.
+Memory consumption went from 201.0 MB to 195.4 MB.
+Total: 9.247200 ms (FindLiveObjects: 0.924400 ms CreateObjectMapping: 0.390700 ms MarkObjects: 4.822300 ms  DeleteObjects: 3.109000 ms)
 
 ========================================================================
 Received Import Request.
-  Time since last request: 24664.725153 seconds.
-  path: Assets/Models/Rope Test 1.fbx
-  artifactKey: Guid(3c044f17116872b4590b59c4eecb0892) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/Models/Rope Test 1.fbx using Guid(3c044f17116872b4590b59c4eecb0892) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '711fb64e8f338833bbf9098e745539ef') in 0.2994709 seconds
-Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 79
+  Time since last request: 14836.667323 seconds.
+  path: Assets/-General/Plug-Ins/Grabbit/Textures/Grabbit Head - Black.png
+  artifactKey: Guid(197eda62f7957da4aa878d3b37b05749) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/-General/Plug-Ins/Grabbit/Textures/Grabbit Head - Black.png using Guid(197eda62f7957da4aa878d3b37b05749) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '96a6ebf5c1f022143f17ae176ad6a23f') in 0.086458 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000020 seconds.
+  path: Assets/-General/Plug-Ins/Grabbit/Textures/Grabbit -Text.png
+  artifactKey: Guid(c67732f12c2b0cc418ddf8bdf64fcf1a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/-General/Plug-Ins/Grabbit/Textures/Grabbit -Text.png using Guid(c67732f12c2b0cc418ddf8bdf64fcf1a) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '763cb5a86217a1014b45610ca5608af8') in 0.0188649 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000016 seconds.
+  path: Assets/-General/Plug-Ins/NaughtyAttributes/Samples/DemoScene/TestAssets/icon-github.png
+  artifactKey: Guid(005888ede18a58e4db8d069cfa3007cb) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/-General/Plug-Ins/NaughtyAttributes/Samples/DemoScene/TestAssets/icon-github.png using Guid(005888ede18a58e4db8d069cfa3007cb) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'b3be232057b720446aab594f61874d4a') in 0.0202453 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000016 seconds.
+  path: Assets/-General/Plug-Ins/Grabbit/Textures/Parrot Icon heart.png
+  artifactKey: Guid(730954ccc36207b45af957c39d12e44c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/-General/Plug-Ins/Grabbit/Textures/Parrot Icon heart.png using Guid(730954ccc36207b45af957c39d12e44c) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: '2cfbe466bea105dc7aab2265c72f29c8') in 0.0163604 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000019 seconds.
+  path: Assets/-General/Plug-Ins/Grabbit/Textures/Grabbit Head - White.png
+  artifactKey: Guid(12dba8acdd9a09343a54a35692110c15) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/-General/Plug-Ins/Grabbit/Textures/Grabbit Head - White.png using Guid(12dba8acdd9a09343a54a35692110c15) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'b66bc10f6c41df0bda19b69677cba7d0') in 0.0155684 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000015 seconds.
+  path: Assets/-General/Plug-Ins/Grabbit/Textures/Parrot Icon speed 2.png
+  artifactKey: Guid(6f19a967e55eb7a4db62b3cd08e30764) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/-General/Plug-Ins/Grabbit/Textures/Parrot Icon speed 2.png using Guid(6f19a967e55eb7a4db62b3cd08e30764) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'cb4d9d4f384c8cda298cd4d0bcf8907a') in 0.0132289 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 3
+
+========================================================================
+Received Prepare
+Refreshing native plugins compatible for Editor in 3.05 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 23 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 6490 unused Assets / (5.6 MB). Loaded Objects now: 7295.
+Memory consumption went from 165.3 MB to 159.6 MB.
+Total: 65.739400 ms (FindLiveObjects: 0.939700 ms CreateObjectMapping: 0.444400 ms MarkObjects: 61.813600 ms  DeleteObjects: 2.538300 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+========================================================================
+Received Prepare
+Begin MonoManager ReloadAssembly
+C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
+C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
+C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
+C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
+C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
+C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
+C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
+C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
+C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
+C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
+C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
+C:\build\output\Unity-Technologies\mono\mono\metadata\icall.c:1842:
+Symbol file LoadedFromMemory doesn't match image C:\Users\Owner\Desktop\Unity\Games\College\Ancient Sins\Ancient_Sins\Library\PackageCache\com.unity.visualscripting@1.8.0\Editor\VisualScripting.Core\Dependencies\YamlDotNet\Unity.VisualScripting.YamlDotNet.dll
+Symbol file LoadedFromMemory doesn't match image C:\Users\Owner\Desktop\Unity\Games\College\Ancient Sins\Ancient_Sins\Library\PackageCache\com.unity.visualscripting@1.8.0\Editor\VisualScripting.Core\Dependencies\DotNetZip\Unity.VisualScripting.IonicZip.dll
+- Loaded All Assemblies, in  4.146 seconds
+Refreshing native plugins compatible for Editor in 1.99 ms, found 6 plugins.
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.690 seconds
+Domain Reload Profiling: 4832ms
+	BeginReloadAssembly (533ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (13ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (215ms)
+	RebuildCommonClasses (122ms)
+	RebuildNativeTypeToScriptingClass (10ms)
+	initialDomainReloadingComplete (57ms)
+	LoadAllAssembliesAndSetupDomain (3420ms)
+		LoadAssemblies (3166ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (441ms)
+			TypeCache.Refresh (13ms)
+				TypeCache.ScanAssembly (1ms)
+			BuildScriptInfoCaches (402ms)
+			ResolveRequiredComponents (16ms)
+	FinalizeReload (691ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (548ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (2ms)
+			SetLoadedEditorAssemblies (3ms)
+			BeforeProcessingInitializeOnLoad (74ms)
+			ProcessInitializeOnLoadAttributes (400ms)
+			ProcessInitializeOnLoadMethodAttributes (62ms)
+			AfterProcessingInitializeOnLoad (7ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (13ms)
+Refreshing native plugins compatible for Editor in 1.81 ms, found 6 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 24 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 6502 unused Assets / (5.1 MB). Loaded Objects now: 7295.
+Memory consumption went from 170.0 MB to 165.0 MB.
+Total: 6.217900 ms (FindLiveObjects: 0.579100 ms CreateObjectMapping: 0.296800 ms MarkObjects: 3.406500 ms  DeleteObjects: 1.934800 ms)
+
+Prepare: number of updated asset objects reloaded= 0
+========================================================================
+Received Import Request.
+  Time since last request: 59787.243275 seconds.
+  path: Assets/-General/URP Settings/URP-HighFidelity.asset
+  artifactKey: Guid(7b7fd9122c28c4d15b667c7040e3b3fd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/-General/URP Settings/URP-HighFidelity.asset using Guid(7b7fd9122c28c4d15b667c7040e3b3fd) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'b3662afe30d3fc5b08e58f05ee2cddca') in 0.0765239 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 0
 

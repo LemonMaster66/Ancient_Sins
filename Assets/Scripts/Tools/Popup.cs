@@ -40,6 +40,7 @@ public class Popup : MonoBehaviour
 
     public virtual void DestroyObj()
     {
+        transform.DOComplete();
         Destroy(gameObject);
     }
 }

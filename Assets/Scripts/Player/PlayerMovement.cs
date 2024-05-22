@@ -272,4 +272,14 @@ public class PlayerMovement : MonoBehaviour
         }
         else return false;
     }
+
+    public void Teleport(Transform newTransform)
+    {
+        rb.position = newTransform.position;
+        CinemachineVirtualCamera cinemachine = FindAnyObjectByType<CinemachineVirtualCamera>();
+        CinemachinePOV pov = cinemachine.GetCinemachineComponent<CinemachinePOV>();
+
+        pov.m_VerticalAxis.Value   = newTransform.eulerAngles.x;
+        pov.m_HorizontalAxis.Value = newTransform.eulerAngles.y;
+    }
 }

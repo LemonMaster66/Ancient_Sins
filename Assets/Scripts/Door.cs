@@ -1,3 +1,4 @@
+using PalexUtilities;
 using UnityEngine;
 using VInspector;
 
@@ -11,8 +12,7 @@ public class Door : Interactable
     [Space(8)]
 
     [Header("Other")]
-    public GameObject collectParticle;
-    public GameObject MoneyText;
+    public Transform SendPosition;
 
 
     [Tab("Audio")]
@@ -47,6 +47,8 @@ public class Door : Interactable
         outline = gameObject.AddComponent<Outline>();
         outline.OutlineMode = Outline.Mode.OutlineVisible;
         outline.OutlineWidth = 0;
+
+        SendPosition = Tools.GetChildren(transform)[0].transform;
     }
     
     
@@ -62,7 +64,7 @@ public class Door : Interactable
 
     public override void InteractStart()
     {
-        // Runs when E is Pressed on the Object
+        playerMovement.Teleport(SendPosition);
     }
 
     public override void InteractEnd()

@@ -85,8 +85,6 @@ public class CameraManager : MonoBehaviour
             Photos.Remove(lastKey);
             Photos.Add(renderStorage, valueStorage);
             if(InGallery && ActivePhoto == Photos.Count-1) DisplayPhoto(Photos.ElementAt(Photos.Count-1).Key);
-
-            playerStats.ObtainMoney(valueStorage, true);
         }
     }
     void Update()
@@ -121,7 +119,7 @@ public class CameraManager : MonoBehaviour
         //     //colorAdjustments.postExposure.value = 1.5f;
         //     //colorAdjustments.contrast.value = -10;
 
-        //     cam.Render();
+        cam.Render();
 
         //     //colorAdjustments.postExposure.value = 0.35f;
         //     //colorAdjustments.contrast.value = -5;
