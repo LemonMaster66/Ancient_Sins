@@ -25,6 +25,7 @@ public class PlayerSFX : AudioManager
     public AudioClip Death;
     [Space(5)]
     public AudioClip[] ObtainMoney;
+    public AudioClip[] LoseMoney;
 
 
     [Tab("Camera")]

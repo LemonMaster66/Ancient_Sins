@@ -70,10 +70,10 @@ public class PlayerStats : MonoBehaviour
     
     public void ObtainMoney(float money, bool UI = false)
     {
-        if(money <= 0) return;
+        if(money == 0) return;
         Money += money;
-        playerSFX.PlayRandomSound(playerSFX.ObtainMoney, 1, 1, 0.1f);
-        //if(UI) SpawnTextUI(money + "");
+        if(money > 0) playerSFX.PlayRandomSound(playerSFX.ObtainMoney, 1, 1, 0.1f);
+        if(money < 0) playerSFX.PlayRandomSound(playerSFX.LoseMoney,   1, 1, 0.1f);
     }
 
     public void SpawnTextUI(string text)

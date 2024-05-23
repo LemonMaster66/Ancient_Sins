@@ -997,6 +997,7 @@ GameObject:
   - component: {fileID: 141526863}
   - component: {fileID: 141526862}
   - component: {fileID: 141526864}
+  - component: {fileID: 141526865}
   m_Layer: 8
   m_Name: Collider
   m_TagString: Untagged
@@ -1092,6 +1093,68 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.55789703, y: 2.2737985, z: 0.3328118}
   m_Center: {x: 7.311974e-15, y: 0.13689958, z: 0.03640486}
+--- !u!114 &141526865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 141526859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8895d7716b47cf41b1a5069e3071ea5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Artefact: 1
+  PhysicsProp: 0
+  Value: -5
+  TimesPhotographed: 0
+  ValueFalloff:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  Destructable: 0
+  Gravity: 100
+  DestructionProp: {fileID: 0}
+  FragmentGravity: 0
+  Force: 0
+  MediumThreshold: 0.8
+  LargeThreshold: 1.3
+  SmallShatterThreshold: 1.85
+  LargeShatterThreshold: 2.1
+  CollideSmallSfx: []
+  CollideMediumSfx: []
+  CollideLargeSfx: []
+  ShatterSmallSfx: []
+  ShatterLargeSfx: []
+  sfxCooldown: 0
+  rb: {fileID: 0}
+  cam: {fileID: 0}
+  audioManager: {fileID: 0}
+  playerMovement: {fileID: 0}
+  enemy: {fileID: 0}
+  cameraManager: {fileID: 0}
+  colliderBounds: {fileID: 0}
 --- !u!1 &145906428
 GameObject:
   m_ObjectHideFlags: 0
@@ -2912,7 +2975,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 9283b80b2b06a8842bee40c85cbd8d99, type: 3}
   Buildup: {fileID: 8300000, guid: 909a1dee86223f0439c6acfc138c0b04, type: 3}
   Release: {fileID: 8300000, guid: 1acc59e7bea13c94e9b71df9ed08ec91, type: 3}
-  textPopup: {fileID: 2662569563403334857, guid: fa14cdc2a94e3254982d916e381805e1,
+  ValuableTextPopup: {fileID: 2662569563403334857, guid: fa14cdc2a94e3254982d916e381805e1,
+    type: 3}
+  UnValuableTextPopup: {fileID: 6709009587907951332, guid: 8522304383d7f25459b0393bf4e5055d,
     type: 3}
   photoPrefab: {fileID: 8790016147515790514, guid: 5225dde42eb087544a6a9729417bd160,
     type: 3}
@@ -3770,6 +3835,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 7ec53c00995f49944b31390251a412a3, type: 3}
   - {fileID: 8300000, guid: 3e05282a877d1bd4c926793bdb1d0f20, type: 3}
   - {fileID: 8300000, guid: f9b8bf3bbe224ca4c8e34b3c85ab5bd4, type: 3}
+  LoseMoney:
+  - {fileID: 8300000, guid: c1d948c2c1123e64b83e9bc0e7a2c208, type: 3}
+  - {fileID: 8300000, guid: 929cd915d5fac9b48a502bfea7c58442, type: 3}
   Capture: {fileID: 8300000, guid: b7e26a2751235c748837943c66fd8e36, type: 3}
   RenderingCapture: {fileID: 8300000, guid: 6355a4ca09b4f4b41b19a7dc2fdb9759, type: 3}
   ZoomInterval: {fileID: 8300000, guid: 0b102e664828c2e4ea56183e5e054333, type: 3}
@@ -14410,7 +14478,7 @@ MonoBehaviour:
   SearchDuration: 0
   AttackCooldown: 0
   State: Wandering
-  Active: 1
+  Active: 0
   WeepingAngel: 1
   Watched: 0
   IgnorePlayer: 0

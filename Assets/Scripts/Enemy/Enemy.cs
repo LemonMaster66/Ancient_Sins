@@ -70,11 +70,9 @@ public class Enemy : MonoBehaviour
 
         FootSteps.volume = agent.velocity.magnitude/10;
         if(State != "Chasing") animator.SetBool("Moving", agent.velocity.magnitude > 1);
-        animator.SetFloat("Blend", State == "Chasing" ? 1 : 0, 0.025f, Time.deltaTime);
+        animator.SetFloat("Blend", State == "Chasing" || State == "Searching" ? 1 : 0, 0.025f, Time.deltaTime);
 
         if(playerStats.Dead) animator.SetBool("Moving", false);
-
-        Debug.Log(agent.velocity.magnitude);
 
         animationSpeedTarget = Watched ? 0 : 1;
         animator.speed = Mathf.SmoothDamp(animator.speed, animationSpeedTarget, ref animationSpeedBlend, 0.075f);

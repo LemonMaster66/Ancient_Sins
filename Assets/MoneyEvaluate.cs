@@ -30,8 +30,10 @@ public class MoneyEvaluate : MonoBehaviour
 
 
     [Tab("Settings")]
-    public GameObject textPopup;
+    public GameObject ValuableTextPopup;
+    public GameObject UnValuableTextPopup;
     public GameObject photoPrefab;
+
     public GameObject currentPhotoObj;
     public GameObject currentTextObj;
 
@@ -79,7 +81,7 @@ public class MoneyEvaluate : MonoBehaviour
 
             if(currentValue == 0) return;
 
-            currentTextObj = Instantiate(textPopup, transform.position, Quaternion.identity);
+            currentTextObj = Instantiate(currentValue > 0 ? ValuableTextPopup : UnValuableTextPopup, transform.position, Quaternion.identity);
             currentTextObj.transform.localScale  = new Vector3(1.5f, 1.5f, 1.5f);
 
             currentTextObj.GetComponent<TextPopup>().TextUpdate(currentValue);
@@ -126,10 +128,9 @@ public class MoneyEvaluate : MonoBehaviour
         if(currentPhotoObj != null) currentPhotoObj.transform.DOComplete(); Destroy(currentPhotoObj);
         if(currentTextObj  != null) currentTextObj. transform.DOComplete(); Destroy(currentTextObj);
 
-        currentTextObj = Instantiate(textPopup, transform.position, Quaternion.identity);
+        currentTextObj = Instantiate(totalMoney > 0 ? ValuableTextPopup : UnValuableTextPopup, transform.position, Quaternion.identity);
         currentTextObj.transform.localScale  = new Vector3(2, 2, 2);
         
-        float currentValue = cameraManager.Photos.ElementAt(ActivePhoto).Value;
         TextPopup text = currentTextObj.GetComponent<TextPopup>();
         text.TextUpdate(totalMoney);
         text.DecayAfter = 2f;
