@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
@@ -16,7 +13,7 @@ public class AudioManager : MonoBehaviour
         AudioSource audioSource = AudioObj.GetComponent<AudioSource>();
         audioSource.clip   =  audioClip;
         audioSource.volume =  Volume;
-        audioSource.pitch  =  Pitch + UnityEngine.Random.Range(-PitchVariation, PitchVariation);
+        audioSource.pitch  =  Pitch + Random.Range(-PitchVariation, PitchVariation);
         audioSource.loop   =  Loop;
 
         audioSource.Play();
@@ -29,13 +26,13 @@ public class AudioManager : MonoBehaviour
         GameObject AudioObj = Instantiate(AudioPrefab, transform.position, Quaternion.identity, transform);
 
         AudioSource audioSource = AudioObj.GetComponent<AudioSource>();
-        AudioClip RandomClip = audioClip[UnityEngine.Random.Range(0, audioClip.Length)];
+        AudioClip RandomClip = audioClip[Random.Range(0, audioClip.Length)];
 
         AudioObj.name = RandomClip.name;
 
         audioSource.clip     = RandomClip;
         audioSource.volume   = Volume;
-        audioSource.pitch    = Pitch + UnityEngine.Random.Range(-PitchVariation, PitchVariation);
+        audioSource.pitch    = Pitch + Random.Range(-PitchVariation, PitchVariation);
 
         audioSource.Play();
         Destroy(AudioObj, RandomClip.length);
@@ -48,6 +45,33 @@ public class AudioManager : MonoBehaviour
         {
             if(audioSource.clip == audioClip) Destroy(audioSource.gameObject);
         }
+    }
+
+    public void SetVolume(AudioClip audioClip, float Volume)
+    {
+        AudioSource[] audioSources = GetComponentsInChildren<AudioSource>();
+        foreach(AudioSource audioSource in audioSources)
+        {
+            if(audioSource.clip == audioClip) audioSource.volume = Volume;
+        }
+    }
+    public void SetPitch(AudioClip audioClip, float Pitch = 1, float PitchVariation = 0)
+    {
+        AudioSource[] audioSources = GetComponentsInChildren<AudioSource>();
+        foreach(AudioSource audioSource in audioSources)
+        {
+            if(audioSource.clip == audioClip) audioSource.pitch = Pitch + Random.Range(-PitchVariation, PitchVariation);
+        }
+    }
+
+    public bool isPlaying(AudioClip audioClip)
+    {
+        AudioSource[] audioSources = GetComponentsInChildren<AudioSource>();
+        foreach(AudioSource audioSource in audioSources)
+        {
+            if(audioSource.clip == audioClip) return true;
+        }
+        return false;
     }
 }
 

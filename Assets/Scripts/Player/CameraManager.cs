@@ -14,11 +14,15 @@ public class CameraManager : MonoBehaviour
 {
     public VInspector.SerializedDictionary<Texture2D, float> Photos;
     public int ActivePhoto;
+    public int FilmLength = 40;
 
     [Space(10)]
 
     public float CaptureCooldown;
     public float captureCooldownTime;
+
+    public float FlashBrightness = 200;
+    public float FlashDecaySpeed = 6;
 
     [Space(5)]
 
@@ -26,16 +30,19 @@ public class CameraManager : MonoBehaviour
 
 
     [Header("States")]
+    public bool Hidden           = false;
     public bool HasCamera        = false;
     public bool Focusing         = false;
     public bool Rendering        = false;
     public bool InGallery        = false;
     public bool TakenPhoto       = false;
+    public bool OutOfFilm        = false;
 
 
     [Foldout("Debug Stuff")]
-    [Range(0,1)]   public float AnimatorWeight;
+    [Range(0,1)]   public float AnimatorWeight = 0.5f;
 
+    public  Texture2D        defaultImage;
     public  Texture2D        renderingImage;
     public  RenderTexture    renderTexture;
     [Space(6)]
@@ -72,7 +79,7 @@ public class CameraManager : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(spotLight.intensity > 0) spotLight.intensity -= 5;
+        if(spotLight.intensity > 0) spotLight.intensity -= FlashDecaySpeed;
         if(spotLight.intensity < 0) spotLight.intensity =  0;
 
         if(captureCooldownTime > 0 && Rendering) captureCooldownTime -= Time.deltaTime;
@@ -89,7 +96,7 @@ public class CameraManager : MonoBehaviour
     }
     void Update()
     {
-        animator.SetFloat("Blend", AnimatorWeight, 0.1f, Time.deltaTime);
+        animator.SetFloat("Blend", Hidden ? 0 : AnimatorWeight, 0.1f, Time.deltaTime);
     }
 
 
@@ -103,15 +110,26 @@ public class CameraManager : MonoBehaviour
 
         if(context.started)
         {
-            if(!Rendering) Capture();
-            else playerSFX.PlaySound(playerSFX.RenderingCapture, 0.15f, 1f, 0.1f);
+            if(!Rendering && Photos.Count < FilmLength) Capture();
+            else if(Rendering) playerSFX.PlaySound(playerSFX.RenderingCapture, 0.15f, 1f, 0.1f);
+            else
+            {
+                playerSFX.PlaySound(playerSFX.RenderingCapture, 0.15f, 0.75f, 0.1f);
+
+                if(OutOfFilm) return;
+
+                playerSFX.PlaySound(playerSFX.OutOfFilm, 0.85f, 1f, 0.05f);
+                OutOfFilm = true;
+                ApplyText();
+            }
         }
     }
     [Button]
     public void Capture()
     {
         Rendering = true;
-        spotLight.intensity = 175;
+        OutOfFilm = false;
+        spotLight.intensity = FlashBrightness;
         captureCooldownTime = CaptureCooldown;
         cam.Render();
 
@@ -141,7 +159,7 @@ public class CameraManager : MonoBehaviour
 
         valueStorage = (float)Math.Round(CalculateArtefacts(), 1);
         playerSFX.PlaySound(playerSFX.Capture, 1, 1, 0.05f);
-        playerSFX.enemy.HearSound(transform.position, 100, 15);
+        if(playerSFX.enemy != null) playerSFX.enemy.HearSound(transform.position, 100, 15);
     }
 
     public float CalculateArtefacts()
@@ -184,7 +202,7 @@ public class CameraManager : MonoBehaviour
         {
             Focusing = false;
             cameraFX.TargetFOV = 60;
-            AnimatorWeight = 0;
+            AnimatorWeight = 0.5f;
         }
     }
 
@@ -252,7 +270,18 @@ public class CameraManager : MonoBehaviour
     {
         if(!TakenPhoto) return;
         ActivePhoto++;
-        tmPro.text = "Photo: " + ActivePhoto + "/" + Photos.Count;
+        tmPro.text = "Photo: " + ActivePhoto + "/" + FilmLength;
         ActivePhoto--;
+
+        if(!InGallery && OutOfFilm) 
+        {
+            tmPro.enabled = true;
+            tmPro.text = "Out Of Film";
+        }
+    }
+
+    public void EnableCamera()
+    {
+
     }
 }

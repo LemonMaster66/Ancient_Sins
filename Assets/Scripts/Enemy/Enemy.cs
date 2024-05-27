@@ -21,21 +21,28 @@ public class Enemy : MonoBehaviour
     public float CurrentNoisePriority;
     public float SearchDuration;
     public float AttackCooldown;
+    public float TimeSinceSeen;
 
 
     [Header("States")]
     [Variants("Wandering", "Searching", "Hearing", "Chasing")]
     public string State;
+    public bool Running;
+
+    [Space(5)]
     
     public bool Active = true;
     public bool WeepingAngel = true;
     public bool Watched;
     public bool IgnorePlayer;
-    
-    [Space(10)]
+
 
     [Tab("Audio")]
-    public AudioSource FootSteps;
+    public AudioSource WalkingSFX;
+    public AudioClip[] SmallSpook;
+    public AudioClip[] BigSpook;
+    public AudioClip[] AmbientSFX;
+
 
     [Tab("Settings")]
     public PlayerMovement playerMovement;
@@ -43,6 +50,7 @@ public class Enemy : MonoBehaviour
     public Camera         cam;
     public NavMeshAgent   agent;
     public Animator       animator;
+    public AudioManager   audioManager;
 
     [Space(10)]
 
@@ -59,17 +67,24 @@ public class Enemy : MonoBehaviour
         cam = Camera.main;
         agent = GetComponentInParent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
-        FootSteps = GetComponentInChildren<AudioSource>();
+        audioManager = GetComponentInChildren<AudioManager>();
         FindAnyObjectByType<PlayerSFX>().enemy = this;
+
+        WalkingSFX = GetComponentInChildren<AudioSource>();
     }
 
     void Update()
     {
         if(SearchDuration > 0) SearchDuration = Math.Clamp(SearchDuration - Time.deltaTime, 0, math.INFINITY);
         if(AttackCooldown > 0) AttackCooldown = Math.Clamp(AttackCooldown - Time.deltaTime, 0, math.INFINITY);
+        if(!Watched)           TimeSinceSeen  += Time.deltaTime;
 
-        FootSteps.volume = agent.velocity.magnitude/10;
-        if(State != "Chasing") animator.SetBool("Moving", agent.velocity.magnitude > 1);
+        Running = State != "Wandering";
+
+        WalkingSFX.volume = agent.velocity.magnitude/10;
+
+
+        if(State != "Chasing") animator.SetBool("Moving", agent.velocity.magnitude > 0.01);
         animator.SetFloat("Blend", State == "Chasing" || State == "Searching" ? 1 : 0, 0.025f, Time.deltaTime);
 
         if(playerStats.Dead) animator.SetBool("Moving", false);
@@ -87,11 +102,9 @@ public class Enemy : MonoBehaviour
 
         if(!IgnorePlayer && AttackCooldown == 0)
         {
-            if(WeepingAngel)
-            {
-                if(Tools.FrustumCheck(Points, cam) && !Tools.OcclusionCheck(Points, playerMovement.Camera, 1000000, OcclusionLayerMask)) Freeze(true);
-                else Freeze(false);
-            }
+            if(Tools.FrustumCheck(Points, cam) && !Tools.OcclusionCheck(Points, playerMovement.Camera, 1000000, OcclusionLayerMask) && WeepingAngel)
+                 Freeze(true);
+            else Freeze(false);
 
             if(!Tools.OcclusionCheck(Points, playerMovement.Camera, 1000000, OcclusionLayerMask))
             {
@@ -104,7 +117,7 @@ public class Enemy : MonoBehaviour
         if(Tools.CalculatePathDistance(transform.position, agent.destination, agent) < 4)
         {
             MoveUpdate();
-            if(IgnorePlayer || Watched || State != "Chasing") return;
+            if(State != "Chasing" || Watched) return;
             if(AttackCooldown == 0 && Vector3.Distance(transform.position, playerMovement.transform.position) < 5) Attack(90);
             animator.CrossFade("Judas_Attack", 0.1f, 0, 0.01f);
         }
@@ -116,14 +129,23 @@ public class Enemy : MonoBehaviour
         if(state && !Watched) //Freeze
         {
             SetState("Chasing");
+            animator.SetBool("Moving", true);
+
+            if(TimeSinceSeen > 25)      audioManager.PlayRandomSound(BigSpook,   1, 1, 0.1f);
+            else if(TimeSinceSeen > 10) audioManager.PlayRandomSound(SmallSpook, 1, 1, 0.1f);
+
             Watched = true;
             agent.speed = 0;
+            TimeSinceSeen = 0;
         }
         else if(!state && Watched) //Unfreeze
         {
             SetState(Tools.OcclusionCheck(Points, playerMovement.Camera, 1000000, OcclusionLayerMask) ? "Searching" : "Chasing");
             Watched = false;
+            TimeSinceSeen = 0;
+
             if(AttackCooldown > 0) AttackCooldown = 0.25f;
+
         }
     }
 

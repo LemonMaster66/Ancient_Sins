@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using VInspector;
 
 public class Popup : MonoBehaviour
 {
     public bool Decay;
+    public bool PunchOnAwake;
     public bool BillboardRotate;
 
     public float DecayAfter;
@@ -21,8 +23,7 @@ public class Popup : MonoBehaviour
         animator = GetComponent<Animator>();
         cam      = Camera.main.transform;
 
-        transform.DOPunchRotation(new Vector3(0,0,25), 0.2f, UnityEngine.Random.Range(15, 30), 1);
-        transform.DOPunchScale(new Vector3(0.1f,0.1f,0.1f), 0.2f, UnityEngine.Random.Range(15, 30), 1);
+        if(PunchOnAwake) Punch();
     }
 
     public virtual void LateUpdate()
@@ -42,5 +43,13 @@ public class Popup : MonoBehaviour
     {
         transform.DOComplete();
         Destroy(gameObject);
+    }
+    
+    [Button]
+    public virtual void Punch()
+    {
+        DOTween.Complete(true);
+        transform.DOPunchRotation(new Vector3(0,0,25), 0.2f, UnityEngine.Random.Range(15, 30), 1);
+        transform.DOPunchScale(new Vector3(0.1f,0.1f,0.1f), 0.2f, UnityEngine.Random.Range(15, 30), 1);
     }
 }

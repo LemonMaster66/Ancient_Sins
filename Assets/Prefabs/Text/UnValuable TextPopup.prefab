@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: 2662569563403334857, guid: fa14cdc2a94e3254982d916e381805e1,
         type: 3}
       propertyPath: m_Name
-      value: Valuable TextPopup Variant
+      value: UnValuable TextPopup
       objectReference: {fileID: 0}
     - target: {fileID: 3353964870849162806, guid: fa14cdc2a94e3254982d916e381805e1,
         type: 3}
@@ -49,6 +49,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5129834192962422713, guid: fa14cdc2a94e3254982d916e381805e1,
+        type: 3}
+      propertyPath: PunchOnAwake
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7637018445480492405, guid: fa14cdc2a94e3254982d916e381805e1,
         type: 3}

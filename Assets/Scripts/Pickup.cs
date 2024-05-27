@@ -20,6 +20,7 @@ public class Pickup : Interactable
     [ShowIf("overrideText")]         public string text;
     [ShowIf("overrideHearRange")]    public float  hearRange;
     [ShowIf("overrideHearPriority")] public float  hearPriority;
+    [EndIf]
 
 
     [Header("Other")]

@@ -30,6 +30,7 @@ public class CameraFX : MonoBehaviour
     [Foldout("Cinemachine stuff")]
     public Camera cam;
     public CinemachineVirtualCamera CMvc;
+    public CinemachineInputProvider CMip;
     public CinemachineBasicMultiChannelPerlin CMbmcp;
     public CinemachineImpulseSource CMis;
     public CinemachinePOV CMpov;
@@ -43,6 +44,7 @@ public class CameraFX : MonoBehaviour
         CMvc = FindAnyObjectByType<CinemachineVirtualCamera>();
         CMbmcp = CMvc.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
         CMpov = CMvc.GetCinemachineComponent<CinemachinePOV>();
+        CMip = GetComponent<CinemachineInputProvider>();
 
         playerMovement = FindAnyObjectByType<PlayerMovement>();
         playerStats = FindAnyObjectByType<PlayerStats>();
@@ -50,7 +52,17 @@ public class CameraFX : MonoBehaviour
 
     void Update()
     {
-        if(playerStats.Dead) return;
+        CMip.enabled = !playerMovement.Paused;
+        
+        if(playerStats.Dead || playerMovement.Paused)
+        {
+            CMvc.m_Lens.Dutch = 0;
+            CMvc.m_Lens.FieldOfView = 60;
+            CMbmcp.m_AmplitudeGain = 0;
+            CMbmcp.m_FrequencyGain = 0;
+            return;
+        }
+
 
         //Dutch Tilt + Field Of View
         CMvc.m_Lens.Dutch = Mathf.SmoothDamp(CMvc.m_Lens.Dutch, TargetDutch, ref BlendDutch, 0.1f);

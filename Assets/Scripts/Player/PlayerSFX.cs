@@ -21,6 +21,7 @@ public class PlayerSFX : AudioManager
 
 
     [Tab("Stats")]
+    public AudioClip StartSFX;
     public AudioClip Damage;
     public AudioClip Death;
     [Space(5)]
@@ -33,6 +34,7 @@ public class PlayerSFX : AudioManager
     public AudioClip RenderingCapture;
     public AudioClip ZoomInterval;
     public AudioClip ViewGallery;
+    public AudioClip OutOfFilm;
 
 
     private PlayerMovement PM;
@@ -52,7 +54,11 @@ public class PlayerSFX : AudioManager
 
     void FixedUpdate()
     {
-        if(PS.Dead) return;
+        if(PS.Dead || PM.Paused)
+        {
+            TimeBetweenSteps = 100;
+            return;
+        }
 
         if(PM.WalkingCheck()) stepTimer -= Time.deltaTime;
         if(stepTimer < 0)

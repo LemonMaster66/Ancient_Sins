@@ -9,7 +9,7 @@ using VInspector;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Movement Physics")]
+    [Tab("Main")]
     public float Speed            = 50;
     public float MaxSpeed         = 80;
     public float CounterMovement  = 10;
@@ -30,22 +30,29 @@ public class PlayerMovement : MonoBehaviour
     public bool  HoldingRun     = false;
 
 
+    [Header("Extras")]
+    public float extraSpeed;
+
+
     #region Debug Stats
-        [Foldout("Debug Stats")]
+        [Tab("Settings")]
         public Vector3     TargetScale;
         public Vector3     PlayerVelocity;
         public Vector3     SmoothVelocity;
         public float       VelocityMagnitude;
-        [HideInInspector]  public float   ForwardVelocityMagnitude;
-        [HideInInspector]  public Vector3 VelocityXZ;
-        [HideInInspector]  public Vector3 CamF;
-        [HideInInspector]  public Vector3 CamR;
-        [HideInInspector]  public Vector3 Movement;
-        [HideInInspector]  public float   MovementX;
-        [HideInInspector]  public float   MovementY;
-        [HideInInspector]  public float   _speed;
-        [HideInInspector]  public float   _maxSpeed;
-        [HideInInspector]  public float   _gravity;
+        public float       ForwardVelocityMagnitude;
+        public Vector3     VelocityXZ;
+        [Space(5)]
+        public Vector3 CamF;
+        public Vector3 CamR;
+        [Space(5)]
+        public Vector3 Movement;
+        public float   MovementX;
+        public float   MovementY;
+        [Space(10)]
+        public float   _speed;
+        public float   _maxSpeed;
+        public float   _gravity;
     #endregion
     
     
@@ -150,7 +157,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if(Paused) return;
+        if(Paused || !CanMove) return;
         if(context.started && !playerStats.Dead)
         {
             if((Grounded || timers.CoyoteTime > 0) && !HasJumped) Jump();
@@ -188,12 +195,12 @@ public class PlayerMovement : MonoBehaviour
         if(state && !Crouching)
         {
             Running = true;
-            Speed = 200;
+            Speed = _speed * 1.6f + extraSpeed;
         }
         else
         {
             Running = false;
-            if(!Crouching) Speed = _speed;
+            if(!Crouching) Speed = _speed + extraSpeed;
         }
     }
 
@@ -237,14 +244,23 @@ public class PlayerMovement : MonoBehaviour
     //***********************************************************************
     //Extra Logic
 
-    public void OnPause(InputAction.CallbackContext context)
-    {
-        if(context.started)
-        {
-            if(Paused) Paused = false;
-            else       Paused = true;
+    // public void OnPause(InputAction.CallbackContext context)
+    // {
+    //     if(context.started)
+    //     {
+    //         Pause(bool State)
 
-            Debug.Log("InputLock = " + Paused);
+    //         Debug.Log("InputLock = " + Paused);
+    //     }
+    // }
+    public void Pause(bool State)
+    {
+        Paused = State;
+        if(Paused)
+        {
+            CanMove = false;
+            Movement = Vector3.zero;
+            rb.velocity = Vector3.zero;
         }
     }
 

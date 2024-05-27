@@ -4,51 +4,25 @@ using VInspector;
 
 public class Door : Interactable
 {
-    [Tab("Main")]
-    [Header("States")]
-    public bool Open;
-    public bool Locked;
-
-    [Space(8)]
-
-    [Header("Other")]
-    public Transform SendPosition;
-
-
-    [Tab("Audio")]
-    public AudioClip[] Open_Small;
-    public AudioClip[] Open_Medium;
-    public AudioClip[] Open_Large;
-
-
-
-    [Tab("Settings")]
-    public Outline outline;
-    public float   TargetOutline = 0;
-    public float   BlendOutline;
-
-    public Animator animator;
-
-    public PlayerMovement playerMovement;
-    public PlayerStats playerStats;
-    public PlayerSFX playerSFX;
-    public Enemy enemy;
+    public string Scene;
+    public bool TransitionOut;
+    private Transform SendPosition;
+    
+    private PlayerMovement playerMovement;
+    // private PlayerStats playerStats;
+    // private PlayerSFX playerSFX;
+    // private Enemy enemy;
 
 
     void Awake()
     {
-        outline = GetComponent<Outline>();
         playerMovement = FindAnyObjectByType<PlayerMovement>();
-        playerStats = FindAnyObjectByType<PlayerStats>();
-        playerSFX = FindAnyObjectByType<PlayerSFX>();
+        // playerStats = FindAnyObjectByType<PlayerStats>();
+        // playerSFX = FindAnyObjectByType<PlayerSFX>();
+        // enemy = FindAnyObjectByType<Enemy>();
 
-        enemy = FindAnyObjectByType<Enemy>();
-
-        outline = gameObject.AddComponent<Outline>();
-        outline.OutlineMode = Outline.Mode.OutlineVisible;
-        outline.OutlineWidth = 0;
-
-        SendPosition = Tools.GetChildren(transform)[0].transform;
+        Transform[] Pos = Tools.GetChildren(transform).ToArray();
+        if(Pos.Length != 0) SendPosition = Pos[0].transform;
     }
     
     
@@ -64,7 +38,23 @@ public class Door : Interactable
 
     public override void InteractStart()
     {
-        playerMovement.Teleport(SendPosition);
+        if(Scene == "") playerMovement.Teleport(SendPosition);
+        else 
+        {
+            SceneLoader sceneLoader = FindAnyObjectByType<SceneLoader>();
+            if(TransitionOut)
+            {
+                sceneLoader.StartCoroutine(sceneLoader.TransitionScene(Scene, 0));
+                CameraManager cameraManager = FindAnyObjectByType<CameraManager>();
+                cameraManager.HasCamera = false;
+                cameraManager.Hidden = true;
+
+                sceneLoader.AssignComponents();
+                sceneLoader.BackgroundImage.color = Color.black;
+                sceneLoader.mask.GetComponent<Animator>().Play("Set In", 0, 0f);
+            }
+            else sceneLoader.StartCoroutine(sceneLoader.ChangeScene(Scene, 0));
+        }
     }
 
     public override void InteractEnd()

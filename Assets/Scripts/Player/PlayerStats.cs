@@ -1,6 +1,7 @@
 using System;
 using Cinemachine;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
@@ -16,13 +17,24 @@ public class PlayerStats : MonoBehaviour
     [Header("States")]
     public bool Dead = false;
 
+    
+    [Tab("Items")]
+    public int extraFilm = 0;       // Costs: 25   |  Gives: +20    Film
+    public int renderSpeed = 0;     // Costs: 50   |  Gives: -0.25  Render Speed
+    public int adrenalineShot = 0;  // Costs: 75   |  Gives: +10    Speed
+    public int SmokeBomb = 0;       // Costs: 100  |  Gives: +1     Smoke Bomb
 
-    private PlayerMovement playerMovement;
-    private PlayerSFX      playerSFX;
+    [Space(6)]
 
-    private Image _damageScreen;
-    private Image _deathScreen;
+    public GameObject SmokeBombPrefab;
 
+
+    [Tab("Settings")]
+    public PlayerMovement playerMovement;
+    public PlayerSFX      playerSFX;
+    public CameraManager  cameraManager;
+    public Image _damageScreen;
+    public Image _deathScreen;
     public GameObject textPopup;
 
 
@@ -32,10 +44,11 @@ public class PlayerStats : MonoBehaviour
         //Assign Scripts
         playerSFX      = FindAnyObjectByType<PlayerSFX>();
         playerMovement = GetComponent<PlayerMovement>();
+        cameraManager  = FindAnyObjectByType<CameraManager>();
 
         GameObject canvas = GameObject.Find("Canvas");
-        _damageScreen = canvas.transform.GetChild(0).GetComponent<Image>();
-        _deathScreen  = canvas.transform.GetChild(1).GetComponent<Image>();
+        if(canvas != null) _damageScreen = canvas.transform.GetChild(0).GetComponent<Image>();
+        if(canvas != null) _deathScreen  = canvas.transform.GetChild(1).GetComponent<Image>();
     }
 
     void Update()
@@ -43,12 +56,11 @@ public class PlayerStats : MonoBehaviour
         if(!Dead) 
         {
             Health = Math.Clamp(Health + Time.deltaTime*2, 0, 100);
-            _damageScreen.color = new Color(1,1,1, (Health / 80*-1)+1);
+            if(_damageScreen != null) _damageScreen.color = new Color(1,1,1, (Health / 80*-1)+1);
         }
-        else
-        {
-            _damageScreen.color = new Color(1,1,1,0);
-        }
+        else if(_damageScreen != null) _damageScreen.color = new Color(1,1,1,0);
+
+        if(Input.GetKeyDown(KeyCode.Q)) UseSmokeBomb();
     }
 
 
@@ -68,12 +80,44 @@ public class PlayerStats : MonoBehaviour
         playerSFX.PlaySound(playerSFX.Death);
     }
     
-    public void ObtainMoney(float money, bool UI = false)
+    public void ObtainMoney(float money, bool ChaChing = false)
     {
         if(money == 0) return;
         Money += money;
-        if(money > 0) playerSFX.PlayRandomSound(playerSFX.ObtainMoney, 1, 1, 0.1f);
-        if(money < 0) playerSFX.PlayRandomSound(playerSFX.LoseMoney,   1, 1, 0.1f);
+        if(money > 0 || ChaChing) playerSFX.PlayRandomSound(playerSFX.ObtainMoney, 1, 1, 0.1f);
+        else if(money < 0)        playerSFX.PlayRandomSound(playerSFX.LoseMoney,   1, 1, 0.1f);
+    }
+
+    [Button]
+    public void UsePassiveItems()
+    {
+        cameraManager.FilmLength += 10 * extraFilm;
+
+        cameraManager.CaptureCooldown -= 0.35f * renderSpeed;
+
+        playerMovement.extraSpeed += 10 * adrenalineShot;
+        playerMovement.Speed = playerMovement._speed + playerMovement.extraSpeed;
+    }
+
+    public void ResetItems()
+    {
+        cameraManager.FilmLength = 40;
+        cameraManager.CaptureCooldown = 1.5f;
+        playerMovement.extraSpeed = 0;
+        playerMovement.Speed = playerMovement._speed;
+
+        extraFilm = 0;
+        renderSpeed = 0;
+        adrenalineShot = 0;
+        SmokeBomb = 0;
+    }
+
+    public void UseSmokeBomb()
+    {
+        if(SmokeBomb == 0) return;
+        if(FindAnyObjectByType<SmokeBomb>() != null) return;
+
+        Instantiate(SmokeBombPrefab, transform.position, Quaternion.identity);
     }
 
     public void SpawnTextUI(string text)
