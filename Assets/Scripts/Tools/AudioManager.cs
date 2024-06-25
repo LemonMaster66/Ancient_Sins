@@ -47,20 +47,16 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void SetVolume(AudioClip audioClip, float Volume)
+    public void SetValues(AudioClip audioClip, float Volume = 1, float Pitch = 1, float PitchVariation = 0, bool Loop = false)
     {
         AudioSource[] audioSources = GetComponentsInChildren<AudioSource>();
         foreach(AudioSource audioSource in audioSources)
         {
-            if(audioSource.clip == audioClip) audioSource.volume = Volume;
-        }
-    }
-    public void SetPitch(AudioClip audioClip, float Pitch = 1, float PitchVariation = 0)
-    {
-        AudioSource[] audioSources = GetComponentsInChildren<AudioSource>();
-        foreach(AudioSource audioSource in audioSources)
-        {
-            if(audioSource.clip == audioClip) audioSource.pitch = Pitch + Random.Range(-PitchVariation, PitchVariation);
+            if(audioSource.clip == audioClip)
+            {
+                audioSource.volume   = Volume;
+                audioSource.pitch    = Pitch + Random.Range(-PitchVariation, PitchVariation);
+            }
         }
     }
 
