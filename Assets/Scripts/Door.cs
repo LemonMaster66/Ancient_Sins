@@ -12,7 +12,7 @@ public class Door : Interactable
     // private PlayerStats playerStats;
     // private PlayerSFX playerSFX;
     // private Enemy enemy;
-
+    
 
     void Awake()
     {
